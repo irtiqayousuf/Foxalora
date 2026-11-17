@@ -84,7 +84,7 @@ export async function verifyLogin(email: string, password: string, server: ImapS
     host: server.host,
     port: server.port,
     secure: server.secure,
-    // Admin policy: never send the password over an unencrypted connection.
+    // Policy: never send the password over an unencrypted connection.
     ...(server.requireTLS && !server.secure ? { doSTARTTLS: true } : {}),
     // Google app passwords are shown as "abcd efgh ijkl mnop"; the spaces are not part of it.
     auth: { user, pass: server.host === "imap.gmail.com" && /^[a-z ]{16,19}$/i.test(password.trim()) ? password.replace(/\s+/g, "") : password.trim() },

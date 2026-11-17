@@ -42,7 +42,7 @@ type Props = {
   variant: "dock" | "inline" | "page";
   onSave: (draft: Draft) => void;
   onSend: (email: SentEmail) => void;
-  /** Administrator's attachment limit for one email, in MB. */
+  /** Attachment limit for one email, in MB (APP_CONFIG.uploadLimitMb). */
   uploadLimitMb?: number;
   onDiscard: (id: string) => void;
   onClose: (draft: Draft | null) => void;

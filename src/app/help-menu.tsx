@@ -18,7 +18,7 @@ const FAQ: { q: string; a: string; tag: string }[] = [
   { tag: "Mail", q: "Can I undo sending an email?", a: "Not yet. Before you send, Foxalora checks for a missing subject or a forgotten attachment and asks you to confirm." },
   { tag: "Mail", q: "How do I search with filters?", a: "Open search in the top bar and click the sliders icon. Filter by sender, date, folder, attachments and more. The count updates as you choose." },
   { tag: "Account", q: "How do I change my profile picture?", a: "Go to Settings → Profile and click your picture or “Upload photo”. Square photos look best." },
-  { tag: "Account", q: "Why can’t I change my email address?", a: "Your email address is your sign-in. Only your administrator can change it." },
+  { tag: "Account", q: "Why can’t I change my email address?", a: "Your email address is your sign-in. To use a different address, sign out and sign in with that account." },
   { tag: "Account", q: "How do I add or change my signature?", a: "Go to Settings → Signature, or click “Edit” under the signature while writing an email." },
   { tag: "Apps", q: "How do I hide Calendar, Contacts or Notes?", a: "Go to Settings → Navigation and turn apps off. With only Mail on, the top bar shows a full search box instead of tabs." },
   { tag: "Accessibility", q: "How do I make text bigger or easier to read?", a: "Click the accessibility icon in the top bar. You can enlarge text, add line spacing, raise contrast, or have Foxalora read aloud." },
@@ -51,7 +51,7 @@ const LESSONS: { id: string; title: string; blurb: string; mins: number; steps: 
     { title: "Clean up", body: "Delete emails you don’t need. They go to Trash first, so you can restore anything deleted by mistake." },
   ] },
   { id: "calendar", title: "Plan with Calendar & Contacts", blurb: "Events, reminders and people.", mins: 5, steps: [
-    { title: "Open Calendar", body: "Click Calendar in the top bar. If you don’t see it, your administrator may have turned it off." },
+    { title: "Open Calendar", body: "Click Calendar in the top bar." },
     { title: "Change the view", body: "Switch between day, week and month to see as much or as little as you need." },
     { title: "Add an event", body: "Click a day or time to add an event quickly. Give it a title, time and place." },
     { title: "Get reminders", body: "Turn on calendar reminders in Settings → Notifications so you never miss a meeting." },
@@ -70,7 +70,7 @@ const LESSONS: { id: string; title: string; blurb: string; mins: number; steps: 
 
 const DOCS: { group: string; items: { title: string; body: string[] }[] }[] = [
   { group: "Getting started", items: [
-    { title: "Signing in", body: ["Sign in with your full email address and password.", "If your organisation uses a control panel such as cPanel or Plesk, you may be signed in automatically.", "For security, you’re signed out after a period of inactivity set by your administrator."] },
+    { title: "Signing in", body: ["Sign in with your full email address and password.", "For security, you’re signed out after a period of inactivity."] },
     { title: "Finding your way around", body: ["The top bar switches between Mail, Calendar, Contacts and Notes.", "Search, help, accessibility tools and settings live on the right.", "Your account menu shows storage use and lets you sign out."] },
   ] },
   { group: "Mail", items: [

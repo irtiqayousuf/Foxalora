@@ -40,7 +40,7 @@ import ContactsView from "./contacts-view";
 import { SEED_CONTACTS, bumpFrequency, loadContacts, loadFrequency, saveContacts, saveFrequency, type Contact as SavedContact, type Frequency } from "./contacts-store";
 import AccountMenu from "./account-menu";
 import NotesView from "./notes-view";
-import { PREFS_KEY, defaultAdminConfig, defaultPreferences, loadJson, saveJson, type AdminConfig, type UserPreferences } from "./settings-store";
+import { APP_CONFIG, PREFS_KEY, defaultPreferences, loadJson, saveJson, type UserPreferences } from "./settings-store";
 import MoveMenu from "./move-menu";
 import EmailReader, { type ReplySeed, type ThreadMessage } from "./email-reader";
 import Composer, { attachmentFiles, formatBytes, newDraftId, type Draft, type Identity, type SentEmail } from "./composer";
@@ -156,27 +156,15 @@ export default function Home() {
   const [filters, setFilters] = useState<SearchFilters>(emptyFilters);
   const [filterOpen, setFilterOpen] = useState(false);
   const [prefs, setPrefs] = useState<UserPreferences>(defaultPreferences);
-  const [adminConfig, setAdminConfig] = useState<AdminConfig>(defaultAdminConfig);
   const [systemDark, setSystemDark] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  /** Admin settings live on the server so they apply to everyone. Re-read after sign-in to get the full set for admins. */
-  const loadAdminConfig = useCallback(async () => {
-    try {
-      const r = await fetch("/api/admin/config", { cache: "no-store" });
-      if (!r.ok) return;
-      const d = (await r.json()) as { isAdmin: boolean; config: Partial<AdminConfig> };
-      setAdminConfig((cur) => ({ ...cur, ...d.config }));
-      setIsAdmin(d.isAdmin);
-    } catch { /* offline: keep defaults */ }
-  }, []);
   // Already signed in (valid session cookie)? Skip the sign-in page.
   useEffect(() => {
     let live = true;
-    fetch("/api/auth/session").then((r) => r.json()).then((d: { email: string | null; localAdmin?: boolean }) => {
-      if (live && d.email) { setEmail(d.email); setSignedIn(true); if (!d.localAdmin) void loadMailRef.current(true); void loadAdminConfig(); }
+    fetch("/api/auth/session").then((r) => r.json()).then((d: { email: string | null }) => {
+      if (live && d.email) { setEmail(d.email); setSignedIn(true); void loadMailRef.current(true); }
     }).catch(() => {});
     return () => { live = false; };
-  }, [loadAdminConfig]);
+  }, []);
   const [savedContacts, setSavedContacts] = useState<SavedContact[]>(SEED_CONTACTS);
   const [frequency, setFrequency] = useState<Frequency>({});
   const updateContacts = useCallback((next: SavedContact[] | ((cur: SavedContact[]) => SavedContact[])) => {
@@ -187,31 +175,14 @@ export default function Home() {
       setPrefs(loadJson(PREFS_KEY, defaultPreferences));
       setSavedContacts(loadContacts());
       setFrequency(loadFrequency());
-      void loadAdminConfig();
     }, 0);
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onMq = () => setSystemDark(mq.matches);
     onMq();
     mq.addEventListener("change", onMq);
     return () => { window.clearTimeout(t); mq.removeEventListener("change", onMq); };
-  }, [loadAdminConfig]);
+  }, []);
   const updatePrefs = (patch: Partial<UserPreferences>) => setPrefs((cur) => { const next = { ...cur, ...patch }; saveJson(PREFS_KEY, next); return next; });
-  const adminSave = useRef<{ timer: number; pending: Partial<AdminConfig> }>({ timer: 0, pending: {} });
-  const updateAdmin = (patch: Partial<AdminConfig>) => {
-    setAdminConfig((cur) => ({ ...cur, ...patch }));
-    const q = adminSave.current;
-    q.pending = { ...q.pending, ...patch };
-    window.clearTimeout(q.timer);
-    q.timer = window.setTimeout(async () => {
-      const body = q.pending; q.pending = {};
-      try {
-        const r = await fetch("/api/admin/config", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) { flash(d.error ?? "Settings couldn’t be saved"); void loadAdminConfig(); return; }
-        setAdminConfig((cur) => ({ ...cur, ...d.config }));
-      } catch { flash("Settings couldn’t be saved. Check your connection."); }
-    }, 600);
-  };
   // Arabic and Urdu read right-to-left: flip the whole layout
   useEffect(() => {
     document.documentElement.lang = prefs.language;
@@ -221,7 +192,7 @@ export default function Home() {
   const theme = prefs.theme === "system" ? (systemDark ? "dark" : "light") : prefs.theme;
   const compact = prefs.density === "compact";
   const setCompact = (fn: (value: boolean) => boolean) => updatePrefs({ density: fn(compact) ? "compact" : "comfortable" });
-  const appName = adminConfig.appName.trim() || "Foxalora";
+  const appName = APP_CONFIG.appName;
   const brandText = appName === "Foxalora" ? "foxalora" : appName;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [remember, setRemember] = useState(false);
@@ -234,7 +205,7 @@ export default function Home() {
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [trustedSenders, setTrustedSenders] = useState<string[]>([]);
-  const effectiveTrusted = adminConfig.blockRemoteImages ? [] : prefs.remoteImages === "always" ? messages.map((m) => m.address) : trustedSenders;
+  const effectiveTrusted = prefs.remoteImages === "always" ? messages.map((m) => m.address) : trustedSenders;
   const [standalone, setStandalone] = useState(false);
   const [rowPreview, setRowPreview] = useState<{ message: MailItem; index: number } | null>(null);
   const [drafts, setDrafts] = useState<Draft[]>([]);
@@ -396,9 +367,7 @@ export default function Home() {
   };
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const mailOnly = !adminConfig.navCalendar && !adminConfig.navContacts && !adminConfig.navNotes;
-  const searchShown = searchOpen || mailOnly;
-  // Apps are only switched off from Settings, so the current screen is never a hidden app.
+  const searchShown = searchOpen;
 
   useEffect(() => {
     if (searchOpen) searchInputRef.current?.focus();
@@ -582,13 +551,12 @@ export default function Home() {
     setSignInError("");
     try {
       const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, remember }) });
-      const data = (await res.json().catch(() => ({}))) as { email?: string; error?: string; localAdmin?: boolean };
+      const data = (await res.json().catch(() => ({}))) as { email?: string; error?: string };
       if (!res.ok) { setSignInError(data.error ?? "Something went wrong. Try again."); return; }
       resetMailbox([]);
       setEmail(data.email ?? email);
       setSignedIn(true);
-      if (!data.localAdmin) void loadMail();
-      void loadAdminConfig();
+      void loadMail();
       setPassword("");
       setNotice("");
     } catch {
@@ -689,27 +657,27 @@ export default function Home() {
 
   if (!signedIn) {
     return (
-      <main className="auth-page" style={{ "--brand": adminConfig.accent } as React.CSSProperties}>
+      <main className="auth-page" style={{ "--brand": APP_CONFIG.accent } as React.CSSProperties}>
         <section className="auth-panel">
           <div className="auth-panel-top">
             <span className="desk-brand brand">
-              {/* eslint-disable-next-line @next/next/no-img-element -- admin-uploaded logo (data URL) */}
-              <span className="brand-mark" style={adminConfig.logo ? { background: "transparent" } : undefined}>{adminConfig.logo ? <img src={adminConfig.logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- configured logo (data URL) */}
+              <span className="brand-mark" style={APP_CONFIG.logo ? { background: "transparent" } : undefined}>{APP_CONFIG.logo ? <img src={APP_CONFIG.logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>
               <span>{brandText}</span>
             </span>
-            <span className="auth-help">New to {appName}? <a href={`mailto:${adminConfig.supportEmail}`}>Get in touch</a></span>
+            <span className="auth-help">New to {appName}? <a href={`mailto:${APP_CONFIG.supportEmail}`}>Get in touch</a></span>
           </div>
           <div className="auth-form-wrap">
             <div className="mobile-brand brand">
-              {/* eslint-disable-next-line @next/next/no-img-element -- admin-uploaded logo (data URL) */}
-              <span className="brand-mark" style={adminConfig.logo ? { background: "transparent" } : undefined}>{adminConfig.logo ? <img src={adminConfig.logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- configured logo (data URL) */}
+              <span className="brand-mark" style={APP_CONFIG.logo ? { background: "transparent" } : undefined}>{APP_CONFIG.logo ? <img src={APP_CONFIG.logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>
               <span>{brandText}</span>
             </div>
             <div className="auth-heading">
               <div className="welcome-icon"><IoMailUnreadOutline /></div>
               <p className="eyebrow">WELCOME BACK</p>
-              <h2>{adminConfig.loginTitle.trim() || "Sign in to your mail"}</h2>
-              <p>{adminConfig.loginMessage.trim() || "Use your existing email account to get started."}</p>
+              <h2>{APP_CONFIG.loginTitle.trim() || "Sign in to your mail"}</h2>
+              <p>{APP_CONFIG.loginMessage.trim() || "Use your existing email account to get started."}</p>
             </div>
 
             <form className="login-form" onSubmit={signIn}>
@@ -742,7 +710,7 @@ export default function Home() {
                 <div id="forgot-help" className="auth-forgot-help" role="note">
                   <button type="button" className="auth-forgot-close" aria-label="Close" onClick={() => setForgotOpen(false)}><IoCloseOutline /></button>
                   <strong>Reset your password with your email provider</strong>
-                  <p>{appName} uses the same password as your email account, so it can’t reset it here. Change it in your hosting control panel, or ask your provider for help{adminConfig.supportEmail ? <> at <a href={`mailto:${adminConfig.supportEmail}`}>{adminConfig.supportEmail}</a></> : null}.</p>
+                  <p>{appName} uses the same password as your email account, so it can’t reset it here. Change it in your hosting control panel, or ask your provider for help{APP_CONFIG.supportEmail ? <> at <a href={`mailto:${APP_CONFIG.supportEmail}`}>{APP_CONFIG.supportEmail}</a></> : null}.</p>
                 </div>
               )}
 
@@ -755,7 +723,7 @@ export default function Home() {
           </div>
           <footer className="auth-legal">
             <span>© {new Date().getFullYear()} {appName}</span>
-            <span>Privacy&nbsp; · &nbsp;Help{(adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl) && <>&nbsp; · &nbsp;<a href={adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl} target="_blank" rel="noopener noreferrer">Website ↗</a></>}</span>
+            <span>Privacy&nbsp; · &nbsp;Help{APP_CONFIG.websiteUrl && <>&nbsp; · &nbsp;<a href={APP_CONFIG.websiteUrl} target="_blank" rel="noopener noreferrer">Website ↗</a></>}</span>
           </footer>
         </section>
       </main>
@@ -793,28 +761,28 @@ export default function Home() {
   }
 
   return (
-    <LangProvider value={prefs.language}><main className="mail-app" data-theme={theme} style={{ "--brand": adminConfig.accent } as React.CSSProperties}>
+    <LangProvider value={prefs.language}><main className="mail-app" data-theme={theme} style={{ "--brand": APP_CONFIG.accent } as React.CSSProperties}>
       <section className="mail-main">
-        <header className={`topbar ${searchShown ? "search-open" : ""} ${mailOnly ? "mail-only" : ""}`}>
+        <header className={`topbar ${searchShown ? "search-open" : ""}`}>
           <div className="topbar-left">
             <a className="brand" href="#" aria-label={`${appName} home`}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- admin-uploaded logo (local data URL) */}
-              {(() => { const logo = (theme === "dark" && adminConfig.logoDark) || adminConfig.logo; return <span className="brand-mark" style={logo ? { background: "transparent" } : undefined}>{logo ? <img src={logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>; })()}<span>{brandText}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- configured logo (local data URL) */}
+              {(() => { const logo = (theme === "dark" && APP_CONFIG.logoDark) || APP_CONFIG.logo; return <span className="brand-mark" style={logo ? { background: "transparent" } : undefined}>{logo ? <img src={logo} alt="" className="brand-logo" /> : <IoMailOutline />}</span>; })()}<span>{brandText}</span>
             </a>
           </div>
           <div className="topbar-center">
-            {!mailOnly && <nav className="app-nav" aria-label="Main navigation">
+            <nav className="app-nav" aria-label="Main navigation">
               <button className={activeSection === "mail" ? "active" : ""} aria-label={tr("Mail")} title={tr("Mail")} onClick={() => setActiveSection("mail")}><IoMailOutline /><span className="nav-label">{tr("Mail")}</span></button>
-              {adminConfig.navCalendar && <button className={activeSection === "calendar" ? "active" : ""} aria-label={tr("Calendar")} title={tr("Calendar")} onClick={() => setActiveSection("calendar")}><IoCalendarOutline /><span className="nav-label">{tr("Calendar")}</span></button>}
-              {adminConfig.navContacts && <button className={activeSection === "contacts" ? "active" : ""} aria-label={tr("Contacts")} title={tr("Contacts")} onClick={() => setActiveSection("contacts")}><IoPeopleOutline /><span className="nav-label">{tr("Contacts")}</span></button>}
-              {adminConfig.navNotes && <button className={activeSection === "notes" ? "active" : ""} aria-label={tr("Notes")} title={tr("Notes")} onClick={() => setActiveSection("notes")}><IoDocumentTextOutline /><span className="nav-label">{tr("Notes")}</span></button>}
-            </nav>}
+              <button className={activeSection === "calendar" ? "active" : ""} aria-label={tr("Calendar")} title={tr("Calendar")} onClick={() => setActiveSection("calendar")}><IoCalendarOutline /><span className="nav-label">{tr("Calendar")}</span></button>
+              <button className={activeSection === "contacts" ? "active" : ""} aria-label={tr("Contacts")} title={tr("Contacts")} onClick={() => setActiveSection("contacts")}><IoPeopleOutline /><span className="nav-label">{tr("Contacts")}</span></button>
+              <button className={activeSection === "notes" ? "active" : ""} aria-label={tr("Notes")} title={tr("Notes")} onClick={() => setActiveSection("notes")}><IoDocumentTextOutline /><span className="nav-label">{tr("Notes")}</span></button>
+            </nav>
             {searchShown ? (
               <div className="search-inline">
                 <IoSearchOutline aria-hidden="true" />
                 <input
                   ref={searchInputRef}
-                  autoFocus={!mailOnly}
+                  autoFocus
                   id="mail-search"
                   type="search"
                   aria-label={`Search ${activeSection}`}
@@ -878,7 +846,7 @@ export default function Home() {
           </div>
           <div className="topbar-right">
             <LanguageMenu value={prefs.language} onChange={(language) => updatePrefs({ language })} />
-            <HelpMenu websiteUrl={adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl}appName={appName} onOpenPage={(p) => { setActiveSection(p); setOpenMessageId(null); setDock(null); }} />
+            <HelpMenu websiteUrl={APP_CONFIG.websiteUrl}appName={appName} onOpenPage={(p) => { setActiveSection(p); setOpenMessageId(null); setDock(null); }} />
             <button className="icon-button topbar-settings" aria-label={tr("Settings")} title={tr("Settings")} aria-pressed={activeSection === "settings"} onClick={() => { setActiveSection("settings"); setOpenMessageId(null); setDock(null); }}><IoSettingsOutline /></button>
             <AccountMenu name={identities[0].name} email={email || identities[0].email} initials={initials} usedBytes={18.6 * 1024 ** 3} quotaBytes={5 * 1024 ** 4} onSettings={() => { setActiveSection("settings"); setOpenMessageId(null); setDock(null); }} onSignOut={signOut} onNotice={flash} />
           </div>
@@ -905,7 +873,7 @@ export default function Home() {
         {dock ? (
           <div className="inbox-content compose-screen">
             <Composer
-              uploadLimitMb={adminConfig.uploadLimitMb}
+              uploadLimitMb={APP_CONFIG.uploadLimitMb}
               key={dock.id}
               variant="page"
               draft={dock}
@@ -935,7 +903,7 @@ export default function Home() {
             onNotice={flash}
             renderReply={(seed, done) => (
               <Composer
-              uploadLimitMb={adminConfig.uploadLimitMb}
+              uploadLimitMb={APP_CONFIG.uploadLimitMb}
                 key={seed.key}
                 variant="inline"
                 draft={replyDraft(seed)}
@@ -1096,14 +1064,11 @@ export default function Home() {
         ) : activeSection === "calendar" ? (
           <CalendarView onNotice={flash} />
         ) : activeSection === "help" || activeSection === "docs" || activeSection === "training" || activeSection === "support" ? (
-          <HelpPages page={activeSection} onPage={setActiveSection} onBack={() => setActiveSection("mail")} supportEmail={adminConfig.supportEmail} userEmail={email || identities[0].email} onNotice={flash} />
+          <HelpPages page={activeSection} onPage={setActiveSection} onBack={() => setActiveSection("mail")} supportEmail={APP_CONFIG.supportEmail} userEmail={email || identities[0].email} onNotice={flash} />
         ) : activeSection === "settings" ? (
           <SettingsView
-            isAdmin={isAdmin}
             prefs={prefs}
             onPrefs={updatePrefs}
-            admin={adminConfig}
-            onAdmin={updateAdmin}
             email={identities[0].email}
             onBack={() => setActiveSection("mail")}
             onNotice={flash}

@@ -16,7 +16,6 @@ function parse(url: string) {
 export async function GET(request: Request) {
   const session = await getSession();
   if (!session) return Response.json({ error: "Please sign in again." }, { status: 401 });
-  if (session.localAdmin) return Response.json({ error: "Local admin sessions do not have mailbox access." }, { status: 403 });
   const { folder, uid, att } = parse(request.url);
   if (!folder || !uid) return Response.json({ error: "Bad request" }, { status: 400 });
   try {

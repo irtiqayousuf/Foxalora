@@ -5,7 +5,6 @@ import { getSession } from "@/lib/session";
 export async function GET(request: Request) {
   const session = await getSession();
   if (!session) return Response.json({ error: "Please sign in again." }, { status: 401 });
-  if (session.localAdmin) return Response.json({ error: "Local admin sessions do not have mailbox access." }, { status: 403 });
   const asked = (new URL(request.url).searchParams.get("folders") ?? FOLDERS.join(",")).split(",").filter((f): f is FolderKey => (FOLDERS as readonly string[]).includes(f));
   try {
     const result = await withImap(session, async (c) => {

@@ -2,11 +2,10 @@ import nodemailer from "nodemailer";
 import MailComposer from "nodemailer/lib/mail-composer";
 import { folderPaths, withImap } from "@/lib/mail";
 import { getSession, type Session } from "@/lib/session";
-import { readAdminConfig } from "@/lib/admin-config";
+import { APP_CONFIG } from "@/app/settings-store";
 
 /** Outgoing (SMTP) server that pairs with the IMAP server the user signed in to. */
 function smtpFor(s: Session): { host: string; port: number; secure: boolean } {
-  if (s.smtp) return s.smtp; // administrator's mapping or default server
   if (process.env.SMTP_HOST) return { host: process.env.SMTP_HOST, port: Number(process.env.SMTP_PORT ?? 465), secure: (process.env.SMTP_SECURE ?? "true") !== "false" };
   const known: Record<string, string> = {
     "imap.gmail.com": "smtp.gmail.com",
@@ -30,13 +29,12 @@ const list = (v: FormDataEntryValue | null) => String(v ?? "").split(/[,;\n]/).m
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return Response.json({ error: "Please sign in again." }, { status: 401 });
-  if (session.localAdmin) return Response.json({ error: "Local admin sessions do not have mailbox access." }, { status: 403 });
   const form = await request.formData();
   const to = list(form.get("to")), cc = list(form.get("cc")), bcc = list(form.get("bcc"));
   if (!to.length && !cc.length && !bcc.length) return Response.json({ error: "Add at least one recipient." }, { status: 400 });
 
   const files = form.getAll("files").filter((f): f is File => f instanceof File);
-  const { uploadLimitMb, requireTls } = await readAdminConfig();
+  const { uploadLimitMb, requireTls } = APP_CONFIG;
   if (files.reduce((t, f) => t + f.size, 0) > uploadLimitMb * 1024 * 1024) return Response.json({ error: `Attachments can be ${uploadLimitMb} MB in total.` }, { status: 400 });
   const attachments = await Promise.all(files.map(async (f) => ({ filename: f.name, content: Buffer.from(await f.arrayBuffer()), contentType: f.type || undefined })));
 
