@@ -9,11 +9,7 @@ import { cookies } from "next/headers";
  */
 export type Session = {
   email: string; user?: string; password: string; host: string; port: number; secure: boolean; expires: number;
-  /** Local development admin session without mailbox credentials. */
-  localAdmin?: boolean;
   requireTLS?: boolean;
-  /** Outgoing server chosen by the administrator (domain mapping or default). */
-  smtp?: { host: string; port: number; secure: boolean };
 };
 
 const COOKIE = "fx_session";
@@ -44,7 +40,7 @@ function unseal(token: string): Session | null {
   }
 }
 
-/** maxAgeSeconds comes from the administrator's session timeout. */
+/** maxAgeSeconds comes from APP_CONFIG.sessionTimeoutMinutes. */
 export async function createSession(data: Omit<Session, "expires">, maxAgeSeconds = DEFAULT_MAX_AGE, remember = true) {
   (await cookies()).set(COOKIE, seal({ ...data, expires: Date.now() + maxAgeSeconds * 1000 }), {
     httpOnly: true,

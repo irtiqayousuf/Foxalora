@@ -27,7 +27,7 @@ const ar: Dict = {
   "How can we help?": "كيف يمكننا مساعدتك؟", "Search our answers or pick a topic below.": "ابحث في إجاباتنا أو اختر موضوعًا أدناه.",
   "Popular questions": "الأسئلة الشائعة", "Show all": "عرض الكل",
   // Settings
-  "Changes save automatically": "تُحفظ التغييرات تلقائيًا", "Your preferences": "تفضيلاتك", "Administration": "الإدارة",
+  "Changes save automatically": "تُحفظ التغييرات تلقائيًا", "Your preferences": "تفضيلاتك",
   "Profile": "الملف الشخصي", "Signature": "التوقيع", "Language & region": "اللغة والمنطقة", "Appearance": "المظهر", "Appearance & reading": "المظهر والقراءة", "Reading & writing": "القراءة والكتابة", "Notifications": "الإشعارات",
   "Branding & sign-in": "العلامة التجارية وتسجيل الدخول", "Mail servers": "خوادم البريد", "Users": "المستخدمون", "Navigation": "التنقل", "Security": "الأمان", "Control panels": "لوحات التحكم",
   // Accessibility
@@ -51,7 +51,7 @@ const ur: Dict = {
   "Keyboard shortcuts": "کی بورڈ شارٹ کٹس", "Back to mail": "میل پر واپس",
   "How can we help?": "ہم کیسے مدد کر سکتے ہیں؟", "Search our answers or pick a topic below.": "جوابات تلاش کریں یا نیچے کوئی موضوع چنیں۔",
   "Popular questions": "مقبول سوالات", "Show all": "سب دکھائیں",
-  "Changes save automatically": "تبدیلیاں خود بخود محفوظ ہوتی ہیں", "Your preferences": "آپ کی ترجیحات", "Administration": "انتظامیہ",
+  "Changes save automatically": "تبدیلیاں خود بخود محفوظ ہوتی ہیں", "Your preferences": "آپ کی ترجیحات",
   "Profile": "پروفائل", "Signature": "دستخط", "Language & region": "زبان اور علاقہ", "Appearance": "ظاہری شکل", "Appearance & reading": "ظاہری شکل اور پڑھنا", "Reading & writing": "پڑھنا اور لکھنا", "Notifications": "اطلاعات",
   "Branding & sign-in": "برانڈنگ اور سائن ان", "Mail servers": "میل سرورز", "Users": "صارفین", "Navigation": "نیویگیشن", "Security": "سیکیورٹی", "Control panels": "کنٹرول پینلز",
   "Accessibility tools": "رسائی کے ٹولز", "Color adjustment": "رنگ کی ترتیب", "Text size": "متن کا سائز", "Navigation adjustment": "نیویگیشن کی ترتیب",

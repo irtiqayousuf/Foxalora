@@ -10,7 +10,6 @@ type Body = { folder?: string; uids?: unknown; action?: string; to?: string };
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return Response.json({ error: "Please sign in again." }, { status: 401 });
-  if (session.localAdmin) return Response.json({ error: "Local admin sessions do not have mailbox access." }, { status: 403 });
   const b = (await request.json().catch(() => ({}))) as Body;
   const folder = b.folder as FolderKey;
   const uids = Array.isArray(b.uids) ? b.uids.filter((u): u is number => Number.isInteger(u) && u > 0) : [];
