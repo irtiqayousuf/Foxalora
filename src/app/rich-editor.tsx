@@ -16,7 +16,8 @@ type Props = {
   plainText: string;
   onPlainTextChange: (text: string) => void;
   onTogglePlain: () => void;
-  onAttach: () => void;
+  onAttach?: () => void;
+  ariaLabel?: string;
   onNotice: (text: string) => void;
   placeholder?: string;
   autoFocus?: boolean;
@@ -173,7 +174,7 @@ export default function RichEditor(props: Props) {
           <button type="button" title="Insert link (Ctrl+K)" aria-label="Insert link (Ctrl+K)" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (plain) return; saveSelection(); setLinkText(document.getSelection()?.toString() ?? ""); setLinkUrl(""); setLinkError(""); setPop(pop === "link" ? null : "link"); }}><LuLink /></button>
           <button type="button" title="Insert image" aria-label="Insert image" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (plain) return; saveSelection(); imageRef.current?.click(); }}><LuImage /></button>
           <button type="button" title="Emoji" aria-label="Emoji" onMouseDown={(e) => e.preventDefault()} onClick={() => { saveSelection(); setPop(pop === "emoji" ? null : "emoji"); }}><LuSmile /></button>
-          <button type="button" title="Attach files" aria-label="Attach files" onMouseDown={(e) => e.preventDefault()} onClick={props.onAttach}><LuPaperclip /></button>
+          {props.onAttach && <button type="button" title="Attach files" aria-label="Attach files" onMouseDown={(e) => e.preventDefault()} onClick={props.onAttach}><LuPaperclip /></button>}
           <button type="button" title="Clear formatting" aria-label="Clear formatting" onMouseDown={(e) => e.preventDefault()} onClick={() => { if (plain) return; exec("removeFormat"); exec("formatBlock", "p"); }}><LuEraser /></button>
         </div>
 
@@ -223,7 +224,7 @@ export default function RichEditor(props: Props) {
             suppressContentEditableWarning
             role="textbox"
             aria-multiline="true"
-            aria-label="Message"
+            aria-label={props.ariaLabel ?? "Message"}
             onInput={emit}
             onKeyUp={saveSelection}
             onMouseUp={saveSelection}

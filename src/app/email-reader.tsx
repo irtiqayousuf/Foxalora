@@ -92,6 +92,8 @@ type Props = {
   onDelete: () => void;
   onToggleUnread: () => void;
   onToggleStar: () => void;
+  /** Real download URL for an attachment (live mailbox); falls back to demo files. */
+  fileUrl?: (name: string) => string | undefined;
   onNotice: (text: string) => void;
   /** Renders the composer for a reply / forward; call done() when it closes. */
   renderReply?: (seed: ReplySeed, done: () => void) => React.ReactNode;
@@ -118,8 +120,8 @@ function demoSize(name: string) {
   return kb > 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb} KB`;
 }
 
-function downloadDemo(name: string, sender: string) {
-  const sample = sampleUrlFor(name, sender);
+function downloadDemo(name: string, sender: string, real?: string) {
+  const sample = real ?? sampleUrlFor(name, sender);
   if (sample) { const a = document.createElement("a"); a.href = sample; a.download = name; document.body.appendChild(a); a.click(); a.remove(); return; }
   const blob = new Blob(
     [`Foxalora demo attachment\n\nFile: ${name}\nFrom: ${sender}\n\nThis prototype has no mail server, so this placeholder stands in for the real file.\n`],
@@ -489,7 +491,7 @@ export default function EmailReader(props: Props) {
                 <h2>
                   {fileFilter === "links" ? "Links" : "Attachments"} <span>{fileFilter === "links" ? linkCount : allFiles.length}</span>
                   {fileFilter !== "links" && shownFiles.length > 1 && (
-                    <button className="reader-download-all" onClick={() => { shownFiles.forEach((f, i) => window.setTimeout(() => downloadDemo(f.name, f.from), i * 250)); props.onNotice(`Downloading ${shownFiles.length} files`); }}>
+                    <button className="reader-download-all" onClick={() => { shownFiles.forEach((f, i) => window.setTimeout(() => downloadDemo(f.name, f.from, props.fileUrl?.(f.name)), i * 250)); props.onNotice(`Downloading ${shownFiles.length} files`); }}>
                       <IoDownloadOutline /> All
                     </button>
                   )}
@@ -519,11 +521,11 @@ export default function EmailReader(props: Props) {
                       const { kind, label } = fileKind(f.name);
                       return (
                         <div key={`${f.from}-${f.name}`} className="reader-file">
-                          <button type="button" className="reader-file-open" title={`Preview ${f.name}`} onClick={() => setPreview({ index: shownFiles.indexOf(f), items: shownFiles.map((x) => ({ name: x.name, from: x.from, size: demoSize(x.name), url: sampleUrlFor(x.name, x.from) })) })}>
+                          <button type="button" className="reader-file-open" title={`Preview ${f.name}`} onClick={() => setPreview({ index: shownFiles.indexOf(f), items: shownFiles.map((x) => ({ name: x.name, from: x.from, size: demoSize(x.name), url: props.fileUrl?.(x.name) ?? sampleUrlFor(x.name, x.from) })) })}>
                             <span className={`file-badge ${kind}`}>{label}</span>
                             <span className="reader-file-text"><strong title={f.name}>{f.name}</strong><small>{demoSize(f.name)} · {f.from}</small></span>
                           </button>
-                          <button className="row-action" title={`Download ${f.name}`} aria-label={`Download ${f.name}`} onClick={() => downloadDemo(f.name, f.from)}><IoDownloadOutline /></button>
+                          <button className="row-action" title={`Download ${f.name}`} aria-label={`Download ${f.name}`} onClick={() => downloadDemo(f.name, f.from, props.fileUrl?.(f.name))}><IoDownloadOutline /></button>
                         </div>
                       );
                     })}
@@ -553,7 +555,7 @@ export default function EmailReader(props: Props) {
           items={preview.items}
           startIndex={preview.index}
           onClose={() => setPreview(null)}
-          onDownload={(item) => downloadDemo(item.name, item.from ?? message.sender)}
+          onDownload={(item) => downloadDemo(item.name, item.from ?? message.sender, props.fileUrl?.(item.name))}
         />
       )}
 

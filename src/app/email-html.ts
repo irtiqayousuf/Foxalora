@@ -265,3 +265,13 @@ export function htmlToPlainText(source: string): string {
 export function plainTextToHtml(text: string): string {
   return text.split(/\n{2,}/).map((block) => `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`).join("");
 }
+
+/** Signatures were saved as plain text before; newer ones are HTML. Always hand back HTML. */
+export function toSignatureHtml(signature: string): string {
+  return /<[a-z][\s\S]*>/i.test(signature) ? signature : plainTextToHtml(signature);
+}
+
+/** True when a signature has visible text or an image (not just empty tags). */
+export function signatureHasContent(html: string): boolean {
+  return Boolean(htmlToPlainText(html).trim()) || /<img\b/i.test(html);
+}

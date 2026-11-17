@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { LuX } from "react-icons/lu";
 
-export type Contact = { name: string; email: string };
+export type Contact = { name: string; email: string; company?: string; count?: number };
 
 export const emailOf = (value: string) => value.match(/<([^>]+)>/)?.[1]?.trim() ?? value.trim();
 export const nameOf = (value: string) => value.replace(/<[^>]+>/, "").replace(/"/g, "").trim() || emailOf(value);
@@ -27,10 +27,12 @@ export default function RecipientInput({ label, values, onChange, contacts, auto
 
   const suggestions = useMemo(() => {
     const q = text.trim().toLowerCase();
-    if (!q) return [];
     const taken = new Set(values.map((v) => emailOf(v).toLowerCase()));
+    // Empty field: offer the people you email most. Typing: match name, email or company, most-emailed first.
+    if (!q) return contacts.filter((c) => (c.count ?? 0) > 0 && !taken.has(c.email.toLowerCase())).slice(0, 5);
     return contacts
-      .filter((c) => !taken.has(c.email.toLowerCase()) && (c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)))
+      .filter((c) => !taken.has(c.email.toLowerCase()) && [c.name, c.email, c.company ?? ""].some((v) => v.toLowerCase().includes(q)))
+      .sort((a, b) => Number(b.name.toLowerCase().startsWith(q)) - Number(a.name.toLowerCase().startsWith(q)) || (b.count ?? 0) - (a.count ?? 0))
       .slice(0, 6);
   }, [text, contacts, values]);
 
@@ -103,11 +105,12 @@ export default function RecipientInput({ label, values, onChange, contacts, auto
       {trailing}
       {focused && suggestions.length > 0 && (
         <ul className="recipient-suggest" role="listbox" aria-label={`${label} suggestions`}>
+          {!text.trim() && <li className="recipient-suggest-head" role="presentation">Frequently contacted</li>}
           {suggestions.map((c, i) => (
             <li key={c.email} role="option" aria-selected={i === active}>
               <button type="button" className={i === active ? "active" : ""} onMouseDown={(e) => { e.preventDefault(); pick(c); }}>
                 <span className="recipient-suggest-avatar">{c.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()}</span>
-                <span><strong>{c.name}</strong><small>{c.email}</small></span>
+                <span><strong>{c.name}</strong><small>{c.email}{c.company ? ` · ${c.company}` : ""}</small></span>
               </button>
             </li>
           ))}

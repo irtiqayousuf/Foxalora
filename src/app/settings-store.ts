@@ -7,6 +7,7 @@
 
 export type UserPreferences = {
   displayName: string;
+  avatar: string; // data URL; empty = initials
   signature: string;
   language: string;
   timeZone: string; // "auto" = device time zone
@@ -36,9 +37,12 @@ export type PanelIntegration = {
 
 export type AdminConfig = {
   appName: string;
-  logo: string; // data URL
+  logo: string; // data URL, light mode
+  logoDark: string; // data URL, dark mode (falls back to logo)
   accent: string;
   supportEmail: string;
+  panelType: "cpanel" | "plesk" | "directadmin" | "other";
+  panelUrl: string; // where admins manage mailboxes, passwords and storage
   defaultLanguage: string;
   defaultTheme: "light" | "dark" | "system";
   loginTitle: string;
@@ -55,6 +59,10 @@ export type AdminConfig = {
   requireTls: boolean;
   blockRemoteImages: boolean;
   maxLoginAttempts: number;
+  allowedDomains: string[]; // empty = any domain may sign in
+  navCalendar: boolean;
+  navContacts: boolean;
+  navNotes: boolean;
   integrations: Record<ControlPanel, PanelIntegration>;
 };
 
@@ -63,6 +71,7 @@ export const ADMIN_KEY = "foxalora.admin-config.v1";
 
 export const defaultPreferences: UserPreferences = {
   displayName: "Alex Morgan",
+  avatar: "",
   signature: "Alex Morgan\nProduct Designer",
   language: "en",
   timeZone: "auto",
@@ -82,28 +91,31 @@ const blankPanel: PanelIntegration = { enabled: false, url: "", token: "", sso: 
 export const defaultAdminConfig: AdminConfig = {
   appName: "Foxalora",
   logo: "",
+  logoDark: "",
   accent: "#111114",
   supportEmail: "support@foxalora.app",
+  panelType: "cpanel",
+  panelUrl: "",
   defaultLanguage: "en",
   defaultTheme: "light",
   loginTitle: "Welcome back",
   loginMessage: "Sign in with your email address and password.",
-  imapHost: "mail.host.com",
+  imapHost: "", // empty = detect automatically
   imapPort: 993,
   imapSecurity: "ssl",
-  smtpHost: "mail.host.com",
+  smtpHost: "",
   smtpPort: 465,
   smtpSecurity: "ssl",
-  mappings: [
-    { id: 1, domain: "example1.com", imap: "mail1.host.com", smtp: "mail1.host.com" },
-    { id: 2, domain: "example2.com", imap: "mail2.host.com", smtp: "mail2.host.com" },
-    { id: 3, domain: "example3.com", imap: "mail3.host.com", smtp: "mail3.host.com" },
-  ],
+  mappings: [],
   sessionTimeout: 60,
   uploadLimitMb: 25,
   requireTls: true,
   blockRemoteImages: true,
   maxLoginAttempts: 5,
+  allowedDomains: [],
+  navCalendar: true,
+  navContacts: true,
+  navNotes: true,
   integrations: { cpanel: { ...blankPanel }, plesk: { ...blankPanel }, directadmin: { ...blankPanel } },
 };
 
@@ -143,14 +155,8 @@ export function mailHostProblem(value: string): string | null {
 
 export const LANGUAGES = [
   { id: "en", label: "English" },
-  { id: "es", label: "Español" },
-  { id: "fr", label: "Français" },
-  { id: "de", label: "Deutsch" },
-  { id: "pt", label: "Português" },
   { id: "ar", label: "العربية" },
-  { id: "hi", label: "हिन्दी" },
   { id: "ur", label: "اردو" },
-  { id: "ja", label: "日本語" },
 ];
 
 export function formatDateWith(d: Date, fmt: UserPreferences["dateFormat"], timeZone: string) {

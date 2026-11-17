@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LuArrowLeft, LuChevronDown, LuMaximize2, LuMinimize2, LuMinus, LuPaperclip, LuPencil, LuSend, LuTrash2, LuX } from "react-icons/lu";
+import { LuArrowLeft, LuMaximize2, LuMinimize2, LuMinus, LuPaperclip, LuPencil, LuTrash2, LuX } from "react-icons/lu";
 import RecipientInput, { isValidEmail, type Contact } from "./recipient-input";
 import RichEditor from "./rich-editor";
-import { htmlToPlainText, plainTextToHtml, sanitizeOutgoingHtml } from "./email-html";
+import { htmlToPlainText, plainTextToHtml, sanitizeOutgoingHtml, signatureHasContent, toSignatureHtml } from "./email-html";
 import AttachmentPreview, { type PreviewItem } from "./attachment-preview";
+import SendButton from "./schedule-send";
 
 export type Identity = { id: string; name: string; email: string; signature: string };
 export type DraftAttachment = { id: number; name: string; size: number; type: string };
@@ -29,7 +30,10 @@ export type Draft = {
   updatedAt: number;
 };
 
-export type SentEmail = Draft & { finalHtml: string; finalText: string; from: Identity };
+export type SentEmail = Draft & { finalHtml: string; finalText: string; from: Identity; scheduledAt?: number };
+
+/** The actual File for each attachment id, so it can be uploaded when sending. */
+export const attachmentFiles = new Map<number, File>();
 
 type Props = {
   draft: Draft;
@@ -38,13 +42,15 @@ type Props = {
   variant: "dock" | "inline" | "page";
   onSave: (draft: Draft) => void;
   onSend: (email: SentEmail) => void;
+  /** Administrator's attachment limit for one email, in MB. */
+  uploadLimitMb?: number;
   onDiscard: (id: string) => void;
   onClose: (draft: Draft | null) => void;
   onEditSignature: (identityId: string, signature: string) => void;
   onNotice: (text: string) => void;
 };
 
-const MAX_TOTAL = 25 * 1024 * 1024;
+const DEFAULT_LIMIT_MB = 25;
 const AUTOSAVE_MS = 1200;
 
 export const newDraftId = () => `d-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -67,6 +73,8 @@ const hasContent = (d: Draft) => Boolean(d.to.length || d.cc.length || d.bcc.len
 
 export default function Composer(props: Props) {
   const { identities, contacts, variant } = props;
+  const limitMb = props.uploadLimitMb ?? DEFAULT_LIMIT_MB;
+  const MAX_TOTAL = limitMb * 1024 * 1024;
   const [d, setD] = useState<Draft>(props.draft);
   const [showCc, setShowCc] = useState(props.draft.cc.length > 0);
   const [showBcc, setShowBcc] = useState(props.draft.bcc.length > 0);
@@ -138,9 +146,10 @@ export default function Composer(props: Props) {
       const id = Date.now() + i;
       accepted.push({ id, name: f.name, size: f.size, type: f.type });
       urls[id] = URL.createObjectURL(f);
+      attachmentFiles.set(id, f);
     });
     if (accepted.length) { update({ attachments: [...d.attachments, ...accepted] }); setFileUrls((m) => ({ ...m, ...urls })); }
-    if (rejected.length) props.onNotice(`${rejected.length === 1 ? rejected[0] : `${rejected.length} files`} would go over the 25 MB limit`);
+    if (rejected.length) props.onNotice(`${rejected.length === 1 ? rejected[0] : `${rejected.length} files`} would go over the ${limitMb} MB limit`);
   }
 
   function togglePlain() {
@@ -154,9 +163,11 @@ export default function Composer(props: Props) {
     setEditorKey((k) => k + 1);
   }
 
-  const signatureHtml = d.signature && identity.signature ? `<div class="signature" style="color:#6f7180">--<br>${identity.signature.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`).replace(/\n/g, "<br>")}</div>` : "";
+  const signatureHtml = d.signature && identity.signature ? `<div class="signature" style="color:#6f7180">--<br>${sanitizeOutgoingHtml(toSignatureHtml(identity.signature))}</div>` : "";
+  const signatureText = identity.signature ? htmlToPlainText(toSignatureHtml(identity.signature)) : "";
   const quotedHtml = d.quoted ? `<blockquote style="margin:16px 0 0;padding-left:12px;border-left:3px solid #e3e5ec;color:#6f7180">${d.quoted.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`).replace(/\n/g, "<br>")}</blockquote>` : "";
 
+  const scheduleRef = useRef<number | undefined>(undefined);
   function trySend(skip: string[] = []) {
     const all = [...d.to, ...d.cc, ...d.bcc];
     if (!all.length) return props.onNotice("Add at least one recipient");
@@ -171,8 +182,8 @@ export default function Composer(props: Props) {
     }
     const bodyHtml = d.plain ? plainTextToHtml(d.text) : sanitizeOutgoingHtml(d.html);
     const finalHtml = `${bodyHtml}${signatureHtml}${quotedHtml}`;
-    const finalText = [bodyText, d.signature && identity.signature ? `--\n${identity.signature}` : "", d.quoted ? d.quoted.split("\n").map((l) => `> ${l}`).join("\n") : ""].filter(Boolean).join("\n\n");
-    props.onSend({ ...d, updatedAt: Date.now(), finalHtml, finalText, from: identity });
+    const finalText = [bodyText, d.signature && signatureText ? `--\n${signatureText}` : "", d.quoted ? d.quoted.split("\n").map((l) => `> ${l}`).join("\n") : ""].filter(Boolean).join("\n\n");
+    props.onSend({ ...d, updatedAt: Date.now(), finalHtml, finalText, from: identity, scheduledAt: scheduleRef.current });
   }
 
   function close() {
@@ -222,18 +233,6 @@ export default function Composer(props: Props) {
         <>
         <div className={`composer-body ${isPage ? "composer-split" : ""}`}>
           <div className="composer-main">
-            {/* From (identity) */}
-            {identities.length > 1 && (
-              <label className="composer-row composer-from">
-                <span className="recipient-label">From</span>
-                <span className="composer-select">
-                  <select value={d.identityId} onChange={(e) => update({ identityId: e.target.value })} aria-label="Send from">
-                    {identities.map((i) => <option key={i.id} value={i.id}>{i.name} &lt;{i.email}&gt;</option>)}
-                  </select>
-                  <LuChevronDown aria-hidden="true" />
-                </span>
-              </label>
-            )}
 
             <RecipientInput
               label="To"
@@ -275,7 +274,7 @@ export default function Composer(props: Props) {
                 <div className="composer-attach-head">
                   <span>Attachments</span>
                   <span className="side-count">{d.attachments.length}</span>
-                  {d.attachments.length > 0 && <span className="composer-attach-total">{formatBytes(totalSize)} of 25 MB</span>}
+                  {d.attachments.length > 0 && <span className="composer-attach-total">{formatBytes(totalSize)} of {limitMb} MB</span>}
                 </div>
                 {d.attachments.length > 0 && (
                   <div className="attach-cards">
@@ -300,18 +299,20 @@ export default function Composer(props: Props) {
             <div className="composer-signature">
               {editingSig ? (
                 <div className="signature-edit">
-                  <textarea value={sigText} onChange={(e) => setSigText(e.target.value)} aria-label={`Signature for ${identity.email}`} rows={3} />
+                  <div className="signature-rich">
+                    <RichEditor initialHtml={sigText} onChange={setSigText} plain={false} plainText="" onPlainTextChange={() => {}} onTogglePlain={() => {}} onNotice={props.onNotice} placeholder="Your name, role, links or a logo" ariaLabel={`Signature for ${identity.email}`} autoFocus />
+                  </div>
                   <div>
                     <button type="button" className="reader-action" onClick={() => setEditingSig(false)}>Cancel</button>
-                    <button type="button" className="reader-action outline-strong" onClick={() => { props.onEditSignature(identity.id, sigText.trim()); setEditingSig(false); update({ signature: Boolean(sigText.trim()) }); }}>Save signature</button>
+                    <button type="button" className="reader-action outline-strong" onClick={() => { const html = signatureHasContent(sigText) ? sanitizeOutgoingHtml(sigText) : ""; props.onEditSignature(identity.id, html); setEditingSig(false); update({ signature: Boolean(html) }); }}>Save signature</button>
                   </div>
                 </div>
               ) : (
                 <>
-                  {d.signature && identity.signature ? <pre className="signature-preview">--{"\n"}{identity.signature}</pre> : <span className="signature-off">No signature</span>}
+                  {d.signature && identity.signature ? <div className="signature-preview signature-html"><span>--</span><div dangerouslySetInnerHTML={{ __html: sanitizeOutgoingHtml(toSignatureHtml(identity.signature)) }} /></div> : <span className="signature-off">No signature</span>}
                   <div className="signature-actions">
                     {identity.signature && <button type="button" onClick={() => update({ signature: !d.signature })}>{d.signature ? "Remove" : "Add signature"}</button>}
-                    <button type="button" onClick={() => { setSigText(identity.signature); setEditingSig(true); }}><LuPencil /> {identity.signature ? "Edit" : "Create signature"}</button>
+                    <button type="button" onClick={() => { setSigText(identity.signature ? toSignatureHtml(identity.signature) : ""); setEditingSig(true); }}><LuPencil /> {identity.signature ? "Edit" : "Create signature"}</button>
                   </div>
                 </>
               )}
@@ -331,7 +332,7 @@ export default function Composer(props: Props) {
 
         <footer className="composer-foot">
           <div className="composer-toolbar-host" ref={setToolbarHost} />
-          <button type="button" className="reader-action primary" onClick={() => trySend()} disabled={!recipientsCount}><LuSend /> Send</button>
+          <SendButton disabled={!recipientsCount} onSend={() => { scheduleRef.current = undefined; trySend(); }} onSchedule={(when) => { scheduleRef.current = when.getTime(); trySend(); }} />
           <button type="button" className="row-action composer-discard" title="Discard draft" aria-label="Discard draft" onClick={() => (hasContent(d) ? setConfirmDiscard(true) : props.onDiscard(d.id))}><LuTrash2 /></button>
         </footer>
         <input ref={fileRef} type="file" multiple hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
