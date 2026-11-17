@@ -24,8 +24,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline-offset: 2px;
 }
 
-.auth-page { min-height: 100vh; display: grid; grid-template-columns: minmax(380px, 0.94fr) 1.06fr; background: #fff; }
-.auth-visual { position: relative; display: flex; min-height: 100vh; flex-direction: column; overflow: hidden; padding: 40px 8.1% 32px; color: #f4f4eb; background: #203d35; }
+.auth-page { min-height: calc(100vh / var(--z, 1)); display: grid; grid-template-columns: minmax(380px, 0.94fr) 1.06fr; background: #fff; }
+.auth-visual { position: relative; display: flex; min-height: calc(100vh / var(--z, 1)); flex-direction: column; overflow: hidden; padding: 40px 8.1% 32px; color: #f4f4eb; background: #203d35; }
 .auth-visual::before { position: absolute; inset: 0; content: ""; opacity: .13; background-image: radial-gradient(#d2dfd3 0.6px, transparent 0.6px); background-size: 15px 15px; mask-image: linear-gradient(130deg, #000, transparent 76%); pointer-events: none; }
 .auth-visual-top, .visual-footer { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: #26453a; text-decoration: none; font-size: 19px; font-weight: 700; letter-spacing: -.7px; }
@@ -57,7 +57,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .auth-visual-copy h1 { margin: 0; color: #f4f1e5; font-family: var(--serif); font-size: clamp(36px, 4vw, 54px); font-weight: 400; letter-spacing: -1.7px; line-height: 1.09; }
 .auth-visual-copy > p:last-child { max-width: 340px; margin: 17px 0 0; color: #c1d0c7; font-size: 13px; line-height: 1.8; }
 .visual-footer { padding-top: 20px; border-top: 1px solid rgba(228,237,226,.18); color: #b1c2b5; font-size: 10px; letter-spacing: .3px; }
-.auth-panel { display: flex; min-height: 100vh; flex-direction: column; padding: 34px clamp(36px, 7vw, 106px) 25px; }
+.auth-panel { display: flex; min-height: calc(100vh / var(--z, 1)); flex-direction: column; padding: 34px clamp(36px, 7vw, 106px) 25px; }
 .auth-panel-top { display: flex; justify-content: flex-end; color: #87918c; font-size: 12px; }
 .auth-help a { color: #36775e; font-weight: 700; text-decoration: none; }
 .auth-form-wrap { width: min(100%, 390px); margin: auto; padding: 34px 0; }
@@ -93,7 +93,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .prototype-notice { margin: 14px 0 0; color: #9ca69f; font-size: 9px; line-height: 1.6; text-align: center; }
 .auth-legal { display: flex; justify-content: space-between; color: #a1aaa4; font-size: 10px; }
 
-.mail-app { display: flex; width: 100%; min-height: 100vh; background: #fff; }
+.mail-app { display: flex; width: 100%; min-height: calc(100vh / var(--z, 1)); background: #fff; }
 .sidebar { position: fixed; z-index: 5; top: 0; bottom: 0; left: 0; display: flex; width: 244px; flex-direction: column; padding: 26px 16px 14px; border-right: 1px solid #edf0ed; background: #fbfcfa; }
 .sidebar-brand-row { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; }
 .sidebar .brand { font-size: 18px; }
@@ -136,7 +136,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .profile-menu:hover { color: #3d7158; background: #eef4ed; }
 .mobile-close, .menu-button { display: none !important; }
 
-.mail-main { min-width: 0; min-height: 100vh; flex: 1; margin-left: 244px; }
+.mail-main { min-width: 0; min-height: calc(100vh / var(--z, 1)); flex: 1; margin-left: 244px; }
 .topbar { position: sticky; z-index: 3; top: 0; display: flex; height: 67px; align-items: center; justify-content: space-between; padding: 0 4.1%; border-bottom: 1px solid #edf0ed; background: rgba(255,255,255,.96); backdrop-filter: blur(12px); }
 .topbar-left, .topbar-right { display: flex; align-items: center; gap: 20px; }
 .breadcrumb { display: flex; align-items: center; gap: 10px; color: #9aa49d; font-size: 11px; }
@@ -257,7 +257,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 580px) {
   .auth-page { display: block; }
   .auth-visual { display: none; }
-  .auth-panel { min-height: 100vh; padding: 20px 24px 20px; }
+  .auth-panel { min-height: calc(100vh / var(--z, 1)); padding: 20px 24px 20px; }
   .auth-panel-top { display: none; }
   .auth-form-wrap { margin: auto; padding: 24px 0; }
   .mobile-brand { display: inline-flex; margin-bottom: 31px; }
@@ -886,7 +886,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .reader-view {
   min-width: 0;
-  min-height: calc(100vh - 124px);
+  min-height: calc(100vh / var(--z, 1) - 124px);
   overflow: auto;
   background: #f7f9fb;
 }
@@ -1136,7 +1136,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .link-confirm-modal .modal-danger svg { font-size: 13px; }
 
 @media (max-width: 620px) {
-  .reader-view { min-height: calc(100vh - 130px); }
+  .reader-view { min-height: calc(100vh / var(--z, 1) - 130px); }
   .reader-toolbar { height: 45px; padding-inline: 10px; }
   .reader-content { padding: 20px 11px 35px; }
   .reader-subject-row { margin-bottom: 14px; }
@@ -1213,7 +1213,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   top: calc(100% + 9px);
   right: 84px;
   display: flex;
-  width: min(320px, calc(100vw - 24px));
+  width: min(320px, calc(100vw / var(--z, 1) - 24px));
   height: 42px;
   align-items: center;
   gap: 9px;
@@ -1543,7 +1543,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* Left showcase: dark rounded glass card */
 .auth-page .auth-visual {
-  min-height: calc(100vh - 40px); border-radius: 32px;
+  min-height: calc(100vh / var(--z, 1) - 40px); border-radius: 32px;
   color: #f2f2f6;
   background:
     radial-gradient(600px 400px at 80% 10%, rgba(120,126,170,.35), transparent 60%),
@@ -1764,7 +1764,7 @@ body:has(.mail-app) {
     linear-gradient(180deg, #eceef3 0%, #e3e6ee 100%);
   background-attachment: fixed;
 }
-.mail-app { min-height: 100dvh; }
+.mail-app { min-height: calc(100dvh / var(--z, 1)); }
 .mail-app .inbox-content, .mail-app .workspace-content {
   width: 100%; max-width: none; box-sizing: border-box;
   padding-inline: clamp(12px, 3vw, 48px);
@@ -1884,7 +1884,7 @@ body:has(.mail-app) {
 .mail-app .mail-body-main { flex: 1 1 auto; min-width: 0; }
 .today-rail {
   position: sticky; top: 84px; flex: 0 0 auto; display: flex; gap: 10px;
-  margin-top: 8px; max-height: calc(100dvh - 100px);
+  margin-top: 8px; max-height: calc(100dvh / var(--z, 1) - 100px);
 }
 .today-rail-strip { display: flex; width: 64px; flex-direction: column; align-items: center; gap: 12px; }
 .today-rail button { border: 0; font: inherit; cursor: pointer; }
@@ -1960,7 +1960,7 @@ body:has(.mail-app) {
 
 /* Tablet: panel floats over content instead of squeezing it */
 @media (max-width: 1100px) {
-  .today-rail-panel { position: absolute; right: 74px; top: 0; z-index: 5; max-height: calc(100dvh - 110px); }
+  .today-rail-panel { position: absolute; right: 74px; top: 0; z-index: 5; max-height: calc(100dvh / var(--z, 1) - 110px); }
 }
 /* Phone: hide the rail, the email list needs the width */
 @media (max-width: 600px) {
@@ -2189,7 +2189,7 @@ body:has(.mail-app) {
 .folder-menu-remove:hover { color: #d0473b; background: #fdecea; }
 
 /* ===== Stable inbox layout: panel always fills the viewport, list scrolls inside ===== */
-.mail-app .mail-main { display: flex; height: 100dvh; min-height: 0; flex-direction: column; overflow: hidden; }
+.mail-app .mail-main { display: flex; height: calc(100dvh / var(--z, 1)); min-height: 0; flex-direction: column; overflow: hidden; }
 .mail-app .mail-main > .topbar { flex: 0 0 auto; }
 .mail-app .mail-body { flex: 1 1 auto; min-height: 0; align-items: stretch; }
 .mail-app .mail-body-main { display: flex; min-height: 0; flex-direction: column; }
@@ -2381,8 +2381,8 @@ body:has(.mail-app) {
 .modal-primary:hover { background: #2a2b33; }
 
 /* Separate window */
-.mail-app.standalone-app { height: 100dvh; overflow: hidden; }
-.mail-app .reader-wrap.standalone { height: 100dvh; box-sizing: border-box; padding: clamp(10px, 2vw, 24px); }
+.mail-app.standalone-app { height: calc(100dvh / var(--z, 1)); overflow: hidden; }
+.mail-app .reader-wrap.standalone { height: calc(100dvh / var(--z, 1)); box-sizing: border-box; padding: clamp(10px, 2vw, 24px); }
 
 /* Print: only the plain, safe print sheet */
 .print-sheet { display: none; }
@@ -2632,7 +2632,7 @@ body:has(.mail-app) {
    ========================================================================== */
 .composer { position: relative; display: flex; flex-direction: column; border: 1px solid rgba(17,17,20,.08); background: #fff; color: var(--g-ink, #111114); font-family: inherit; }
 .composer-dock {
-  position: fixed; right: clamp(12px, 2vw, 28px); bottom: 0; z-index: 40; width: min(620px, calc(100vw - 24px)); max-height: min(720px, calc(100dvh - 90px));
+  position: fixed; right: clamp(12px, 2vw, 28px); bottom: 0; z-index: 40; width: min(620px, calc(100vw / var(--z, 1) - 24px)); max-height: min(720px, calc(100dvh / var(--z, 1) - 90px));
   border-radius: 20px 20px 0 0; box-shadow: 0 24px 60px rgba(17,17,20,.22);
 }
 .composer-dock.size-min { width: 320px; max-height: none; }
@@ -2883,7 +2883,7 @@ body:has(.mail-app) {
 .search-filter-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border: 1.5px solid #fff; border-radius: 50%; background: #1f5fcf; }
 
 .search-filter-card {
-  position: absolute; top: calc(100% + 10px); right: 0; z-index: 45; display: flex; width: min(520px, calc(100vw - 24px)); flex-direction: column; gap: 14px;
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 45; display: flex; width: min(520px, calc(100vw / var(--z, 1) - 24px)); flex-direction: column; gap: 14px;
   padding: 16px 18px; border: 1px solid rgba(17,17,20,.08); border-radius: 22px; background: #fff; box-shadow: 0 24px 60px rgba(17,17,20,.18);
   color: var(--g-ink); text-align: left; animation: rail-in .15s ease;
 }
@@ -2922,7 +2922,7 @@ body:has(.mail-app) {
 .srb-chip button:hover { color: var(--g-ink); background: rgba(17,17,20,.07); }
 .srb-link { padding: 2px 4px; border: 0; color: var(--g-ink); background: none; font: inherit; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .srb-clear { margin-left: auto; color: var(--g-muted); }
-@media (max-width: 600px) { .sfc-grid { grid-template-columns: 1fr; } .search-filter-card { position: fixed; top: 70px; right: 12px; left: 12px; width: auto; max-height: calc(100dvh - 90px); overflow-y: auto; } }
+@media (max-width: 600px) { .sfc-grid { grid-template-columns: 1fr; } .search-filter-card { position: fixed; top: 70px; right: 12px; left: 12px; width: auto; max-height: calc(100dvh / var(--z, 1) - 90px); overflow-y: auto; } }
 
 /* ===== Calendar (matches inbox panel) ===== */
 .mail-app .calendar-screen { display: flex; min-height: 0; flex-direction: column; padding-top: 16px; padding-bottom: 16px; overflow: hidden; }
@@ -3104,7 +3104,7 @@ body:has(.mail-app) {
 
 /* ===== Quick event card (floats where you click) ===== */
 .quick-event {
-  position: fixed; z-index: 70; display: flex; width: min(400px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); flex-direction: column; gap: 10px; overflow-y: auto;
+  position: fixed; z-index: 70; display: flex; width: min(400px, calc(100vw / var(--z, 1) - 24px)); max-height: calc(100dvh / var(--z, 1) - 24px); flex-direction: column; gap: 10px; overflow-y: auto;
   padding: 10px 18px 16px; border: 1px solid rgba(17,17,20,.08); border-radius: 22px; background: #fff; box-shadow: 0 24px 60px rgba(17,17,20,.22);
   color: var(--g-ink, #111114); animation: rail-in .15s ease;
 }
@@ -3156,7 +3156,7 @@ body:has(.mail-app) {
 .day-pop-actions button:hover { border-color: var(--g-ink); }
 
 /* ===== Find emails card (v2) ===== */
-.mail-app .search-filter-card { width: min(480px, calc(100vw - 24px)); max-height: calc(100dvh - 110px); gap: 0; overflow-y: auto; padding: 0; }
+.mail-app .search-filter-card { width: min(480px, calc(100vw / var(--z, 1) - 24px)); max-height: calc(100dvh / var(--z, 1) - 110px); gap: 0; overflow-y: auto; padding: 0; }
 .mail-app .search-filter-card .sfc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 6px; }
 .mail-app .search-filter-card .sfc-head strong { display: block; color: var(--g-ink); font-size: 17px; font-weight: 600; letter-spacing: -.2px; }
 .mail-app .search-filter-card .sfc-head p { margin: 3px 0 0; color: var(--g-muted); font-size: 12.5px; }
@@ -3416,7 +3416,7 @@ select.set-input { cursor: pointer; }
 .auth-page { grid-template-columns: 1fr !important; }
 
 /* Sign-in: fit the window exactly; scroll inside only when the window is too short */
-.auth-page { box-sizing: border-box; height: 100dvh; min-height: 0; overflow: hidden; }
+.auth-page { box-sizing: border-box; height: calc(100dvh / var(--z, 1)); min-height: 0; overflow: hidden; }
 .auth-page .auth-panel { box-sizing: border-box; min-height: 0; height: 100%; overflow-y: auto; padding-top: clamp(16px, 4vh, 34px); padding-bottom: clamp(12px, 3vh, 25px); }
 .auth-page .auth-form-wrap { padding: clamp(8px, 3vh, 34px) 0; }
 @media (max-height: 640px) { .auth-page .auth-form-wrap { margin-top: 0; } }
@@ -3491,7 +3491,7 @@ select.set-input { cursor: pointer; }
    Account menu (avatar)
    ========================================================================== */
 .acct { position: relative; }
-.acct-pop { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: min(360px, calc(100vw - 24px)); padding: 12px; border: 1px solid rgba(255,255,255,.8); border-radius: 26px; background: rgba(246,247,250,.92); box-shadow: 0 18px 48px rgba(40,44,70,.18), inset 0 1px 0 rgba(255,255,255,.9); backdrop-filter: blur(18px); animation: acct-in .14s ease-out; }
+.acct-pop { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: min(360px, calc(100vw / var(--z, 1) - 24px)); padding: 12px; border: 1px solid rgba(255,255,255,.8); border-radius: 26px; background: rgba(246,247,250,.92); box-shadow: 0 18px 48px rgba(40,44,70,.18), inset 0 1px 0 rgba(255,255,255,.9); backdrop-filter: blur(18px); animation: acct-in .14s ease-out; }
 @keyframes acct-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
 .acct-close { position: absolute; top: 10px; right: 10px; display: grid; width: 30px; height: 30px; place-items: center; border: 0; border-radius: 50%; color: var(--g-muted); background: transparent; cursor: pointer; font-size: 16px; }
 .acct-close:hover { color: var(--g-ink); background: rgba(17,17,20,.06); }
@@ -3998,8 +3998,8 @@ html { scroll-padding-top: 88px; scroll-padding-bottom: 96px; }
 .a11y-wrap { position: relative; display: flex; }
 .mail-app .icon-button.a11y-active { box-shadow: inset 0 0 0 1.5px var(--g-ink); color: var(--g-ink); }
 .a11y-panel {
-  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: 380px; max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 90px); overflow-y: auto; box-sizing: border-box; padding: 20px;
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: 380px; max-width: calc(100vw / var(--z, 1) - 32px);
+  max-height: calc(100vh / var(--z, 1) - 90px); overflow-y: auto; box-sizing: border-box; padding: 20px;
   border: 1px solid rgba(17,17,20,.08); border-radius: 24px; background: #fff; color: #111114;
   box-shadow: 0 24px 60px rgba(17,17,20,.18); animation: modal-pop .16s ease;
 }
@@ -4073,7 +4073,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 /* ===== Help & support ===== */
 .help-wrap { position: relative; display: flex; }
 .help-menu {
-  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: 320px; max-width: calc(100vw - 32px); box-sizing: border-box;
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; width: 320px; max-width: calc(100vw / var(--z, 1) - 32px); box-sizing: border-box;
   padding: 8px; border: 1px solid rgba(17,17,20,.08); border-radius: 22px; background: #fff; box-shadow: 0 24px 60px rgba(17,17,20,.18); animation: modal-pop .16s ease;
 }
 .help-menu-head { padding: 12px 12px 10px; }
@@ -4091,7 +4091,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 .help-item:hover .help-item-chev { transform: translateX(2px); color: #111114; }
 .help-sep { height: 1px; margin: 6px 8px; background: rgba(17,17,20,.08); }
 .help-sheet {
-  display: flex; width: min(560px, 100%); max-height: min(720px, calc(100vh - 32px)); flex-direction: column; overflow: hidden;
+  display: flex; width: min(560px, 100%); max-height: min(720px, calc(100vh / var(--z, 1) - 32px)); flex-direction: column; overflow: hidden;
   border-radius: 24px; background: #fff; box-shadow: 0 24px 60px rgba(17,17,20,.25); animation: modal-pop .18s ease;
 }
 .help-sheet-head { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid rgba(17,17,20,.06); }
@@ -4400,7 +4400,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 .a11y-fab:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(17,17,20,.2); }
 .a11y-fab[aria-expanded="true"] { color: #fff; background: #111114; border-color: #111114; }
 .a11y-fab.a11y-active { box-shadow: 0 0 0 3px #fff, 0 0 0 5px #111114, 0 8px 24px rgba(17,17,20,.16); }
-.a11y-floating .a11y-panel { top: auto; bottom: calc(100% + 12px); max-height: calc(100vh - 110px); }
+.a11y-floating .a11y-panel { top: auto; bottom: calc(100% + 12px); max-height: calc(100vh / var(--z, 1) - 110px); }
 
 /* ===== Training wizard v2 ===== */
 .tr-main { max-width: 1040px; }
@@ -4499,7 +4499,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 .signature-html > span { color: var(--g-muted); }
 
 /* Language menu */
-.lang-menu { width: 280px; max-height: calc(100vh - 100px); overflow-y: auto; }
+.lang-menu { width: 280px; max-height: calc(100vh / var(--z, 1) - 100px); overflow-y: auto; }
 .lang-item { gap: 10px; padding: 9px 12px; }
 .lang-code { display: grid; width: 32px; height: 26px; flex: 0 0 auto; place-items: center; border-radius: 8px; color: var(--g-muted); background: #f1f2f5; font-size: 10.5px; font-weight: 700; letter-spacing: .3px; }
 .lang-item.on .lang-code { color: #fff; background: #111114; }
@@ -4572,7 +4572,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 @media (max-width: 560px) { .set-logo-slots { grid-template-columns: 1fr; } }
 
 /* Signature: fill the available height */
-.sig-layout { min-height: calc(100vh - 230px); align-items: stretch; }
+.sig-layout { min-height: calc(100vh / var(--z, 1) - 230px); align-items: stretch; }
 .sig-layout > .set-card { display: flex; flex-direction: column; }
 .sig-editor .sig-rich { display: flex; flex: 1; min-height: 320px; flex-direction: column; }
 .sig-editor .sig-rich > * { flex: 1; display: flex; flex-direction: column; }
@@ -4631,7 +4631,7 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 .ct-add-email:hover { border-style: solid; background: #f6f7f9; }
 .ct-freq { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; color: #fff; background: var(--g-ink); font-size: 11px; font-weight: 700; line-height: 22px; text-align: center; }
 .ct-hist-icon { vertical-align: -2px; }
-.ct-import { width: min(520px, calc(100vw - 32px)); }
+.ct-import { width: min(520px, calc(100vw / var(--z, 1) - 32px)); }
 .ct-imp-icon { color: var(--g-ink) !important; background: #f1f2f5 !important; }
 .ct-imp-list { max-height: 280px; overflow-y: auto; margin: 14px 0 0; padding: 4px; list-style: none; border: 1px solid rgba(17,17,20,.08); border-radius: 14px; text-align: start; }
 .ct-imp-list li { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; }
@@ -4768,3 +4768,14 @@ html.a11y-hide-images img, html.a11y-hide-images video, html.a11y-hide-images pi
 .set-brand-card .set-row-text p { margin-top: 2px; }
 .set-brand-card .set-row-control { justify-content: stretch; }
 .set-brand-card .set-row-control > :is(input, textarea, select, .set-input) { width: 100%; }
+
+/* Large screens: scale the whole UI up so text isn't tiny.
+   Full-height panels divide by --z so they still fit the window exactly. */
+@media (min-width: 1600px) { html { zoom: 1.1; } }
+@media (min-width: 1920px) { html { zoom: 1.2; } }
+@media (min-width: 2400px) { html { zoom: 1.35; } }
+@media (min-width: 3000px) { html { zoom: 1.6; } }
+a.help-item { box-sizing: border-box; text-decoration: none; }
+.auth-legal a { color: inherit; text-decoration: none; font-weight: 600; }
+.auth-legal a:hover { text-decoration: underline; }
+.sp-foot a { color: #111114; font-weight: 600; text-decoration: none; }

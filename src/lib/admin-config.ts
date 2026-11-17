@@ -43,7 +43,7 @@ export function isAdminEmail(email: string | undefined | null) {
 /** Settings anyone may see (needed before sign-in for the login page, and by every user). */
 export function publicConfig(c: AdminConfig) {
   return {
-    appName: c.appName, logo: c.logo, logoDark: c.logoDark, accent: c.accent, supportEmail: c.supportEmail,
+    appName: c.appName, logo: c.logo, logoDark: c.logoDark, accent: c.accent, supportEmail: c.supportEmail, websiteUrl: c.websiteUrl,
     defaultLanguage: c.defaultLanguage, defaultTheme: c.defaultTheme, loginTitle: c.loginTitle, loginMessage: c.loginMessage,
     uploadLimitMb: c.uploadLimitMb, blockRemoteImages: c.blockRemoteImages, sessionTimeout: c.sessionTimeout,
     navCalendar: c.navCalendar, navContacts: c.navContacts, navNotes: c.navNotes,
@@ -68,6 +68,7 @@ function sanitize(c: AdminConfig): AdminConfig {
     logoDark: img(c.logoDark),
     accent: /^#[0-9a-f]{6}$/i.test(c.accent) ? c.accent : d.accent,
     supportEmail: /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(c.supportEmail) ? c.supportEmail.trim() : d.supportEmail,
+    websiteUrl: (() => { const v = str(c.websiteUrl, 300).trim(); if (!v) return ""; if (/^\/(?!\/)[\w\-./#?=&%]*$/.test(v)) return v; try { const u = new URL(v); return u.protocol === "https:" || u.protocol === "http:" ? u.toString() : ""; } catch { return ""; } })(),
     panelType: (["cpanel", "plesk", "directadmin", "other"] as const).includes(c.panelType) ? c.panelType : "cpanel",
     panelUrl: (() => { try { const u = new URL(str(c.panelUrl, 300).trim()); return u.protocol === "https:" ? u.toString() : ""; } catch { return ""; } })(),
     defaultLanguage: LANGUAGES.some((l) => l.id === c.defaultLanguage) ? c.defaultLanguage : "en",

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security · Foxalora webmail</title>
+<meta name="description" content="How Foxalora protects mailbox passwords, email content and your servers: encryption, safe email rendering, SSRF protection and OWASP ASVS Level 2.">
+<meta property="og:title" content="Security · Foxalora webmail">
+<meta property="og:description" content="How Foxalora protects mailbox passwords, email content and your servers: encryption, safe email rendering, SSRF protection and OWASP ASVS Level 2.">
+<meta name="theme-color" content="#111114">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23111114'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='700' fill='white' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html" aria-label="Foxalora home"><span class="brand-mark">F</span>Foxalora</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="features.html" data-page="features">Features</a>
+      <a href="hosts.html" data-page="hosts">For hosts</a>
+      <a href="security.html" data-page="security" aria-current="page">Security</a>
+      <a href="get-started.html" data-page="get-started">Get started</a>
+      <a href="contact.html" data-page="contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch light or dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm" href="get-started.html">Get Foxalora free</a>
+      <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
+    <a href="index.html" data-page="home">Home</a>
+    <a href="features.html" data-page="features">Features</a>
+    <a href="hosts.html" data-page="hosts">For hosts</a>
+    <a href="security.html" data-page="security" aria-current="page">Security</a>
+    <a href="get-started.html" data-page="get-started">Get started</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a class="btn btn-primary" href="get-started.html">Get Foxalora free</a>
+  </nav>
+</header>
+
+<main id="main">
+<section class="page-hero hero">
+  <div class="wrap reveal">
+    <span class="eyebrow"><span class="dot"></span> Security first</span>
+    <h1>Email is personal. We protect it that way.</h1>
+    <p class="lead">Foxalora can read and send your customers' email, so security isn't a feature. It's the foundation everything is built on.</p>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap">
+    <div class="grid g3 reveal">
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><h3>Passwords never stored in plain text</h3><p>Mailbox passwords are never saved in plain text, never put in the browser's storage, and never written to logs.</p></div>
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><h3>Encrypted end to end</h3><p>HTTPS in the browser and TLS to your mail servers, with certificates checked. No silent fallback to unencrypted connections.</p></div>
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 22 12a14 14 0 0 1-2.2 3M6.7 6.7A14 14 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 5.3-1.6"/></svg></span><h3>Safe email display</h3><p>Every incoming email is treated as untrusted. Scripts and harmful code are removed, and emails are shown in an isolated, sandboxed area.</p></div>
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></span><h3>Tracking images blocked</h3><p>Outside images are blocked by default, so senders can't secretly tell when someone opens their email.</p></div>
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="3" width="20" height="7" rx="2"/><rect x="2" y="14" width="20" height="7" rx="2"/></svg></span><h3>Your network stays private</h3><p>Users can't point Foxalora at unknown servers. Only mail servers you approve are used, which protects your internal network (SSRF protection).</p></div>
+      <div class="card"><span class="ic dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><h3>Secure sessions</h3><p>Secure, HttpOnly cookies, automatic sign-out after inactivity, limits on failed sign-ins and protection against forged requests.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap">
+    <div class="spot reveal">
+      <div class="spot-text">
+        <span class="eyebrow">What we store</span>
+        <h3>We keep as little as possible.</h3>
+        <p>Emails and attachments stay on your mail servers. Foxalora only keeps what it needs to work.</p>
+        <ul class="ticks"><li>Preferences, contacts and signatures</li><li>Your admin settings and server mappings</li><li>Security events, without any email content</li></ul>
+      </div>
+      <div class="panel">
+        <p style="margin-bottom:12px;font-size:13px;font-weight:600">Never stored or logged</p>
+        <div style="display:grid;gap:10px">
+          <div class="check"><span class="s" style="color:var(--warn)">✕</span>Mailbox passwords in plain text</div>
+          <div class="check"><span class="s" style="color:var(--warn)">✕</span>Full email contents</div>
+          <div class="check"><span class="s" style="color:var(--warn)">✕</span>Attachment contents</div>
+          <div class="check"><span class="s" style="color:var(--warn)">✕</span>Session tokens in logs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Standards</span>
+      <h2>Built to recognised standards.</h2>
+      <p>We follow established security guidance and test before every release.</p>
+    </div>
+    <div class="grid g4 reveal">
+      <div class="card"><h3 style="margin-top:0">OWASP ASVS L2</h3><p>The minimum security level we build and test against.</p></div>
+      <div class="card"><h3 style="margin-top:0">TLS 1.2+</h3><p>TLS 1.3 preferred for every connection, following RFC 8314.</p></div>
+      <div class="card"><h3 style="margin-top:0">IMAP4rev2</h3><p>Standards-based mail access, following RFC 9051.</p></div>
+      <div class="card"><h3 style="margin-top:0">Pen-tested</h3><p>Independent penetration testing before public release.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="report">
+  <div class="wrap reveal" style="max-width:760px;text-align:center">
+    <span class="eyebrow">Responsible disclosure</span>
+    <h2 style="font-size:clamp(28px,3.6vw,40px)">Found a security issue?</h2>
+    <p class="lead" style="margin-top:14px">Please tell us privately so we can fix it before it's shared. We'll reply quickly and credit you if you'd like.</p>
+    <p style="margin-top:24px"><a class="btn btn-primary" href="mailto:security@foxalora.com">security@foxalora.com</a></p>
+  </div>
+</section>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="brand" href="index.html"><span class="brand-mark">F</span>Foxalora</a>
+        <p>Modern, secure, open-source webmail for hosting companies and their customers.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="hosts.html">For hosting companies</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="get-started.html">Get started</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="get-started.html#install">Installation guide</a></li>
+          <li><a href="get-started.html#wizard">Setup wizard</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="security.html#report">Report a vulnerability</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="mailto:support@foxalora.com">support@foxalora.com</a></li>
+          <li><a href="contact.html#privacy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> Foxalora. Free and open source.</span>
+      <span>Made for hosting companies everywhere.</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+
+</body>
+</html>

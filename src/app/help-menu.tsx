@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useT } from "./i18n";
 import { IoHelpCircleOutline } from "react-icons/io5";
 import {
-  LuAccessibility, LuArrowLeft, LuCalendarDays, LuSparkles, LuBookText, LuCheck, LuLayoutGrid, LuMail, LuUser, LuChevronDown, LuChevronRight, LuClock, LuGraduationCap,
+  LuAccessibility, LuArrowLeft, LuCalendarDays, LuSparkles, LuBookText, LuCheck, LuLayoutGrid, LuMail, LuUser, LuChevronDown, LuChevronRight, LuGlobe, LuExternalLink, LuClock, LuGraduationCap,
   LuHeadset, LuKeyboard, LuLifeBuoy, LuSearch, LuSend, LuX,
 } from "react-icons/lu";
 
@@ -99,7 +99,7 @@ const PROGRESS_KEY = "foxalora.training.v2";
 
 export type HelpPage = "help" | "docs" | "training" | "support";
 
-export default function HelpMenu({ onOpenPage }: { onOpenPage: (page: HelpPage) => void }) {
+export default function HelpMenu({ onOpenPage, websiteUrl, appName }: { onOpenPage: (page: HelpPage) => void; websiteUrl?: string; appName?: string }) {
   const t = useT();
   const [menu, setMenu] = useState(false);
   const [overlay, setOverlay] = useState<"shortcuts" | null>(null);
@@ -141,6 +141,13 @@ export default function HelpMenu({ onOpenPage }: { onOpenPage: (page: HelpPage) 
               <LuChevronRight className="help-item-chev" />
             </button>
           ))}
+          {websiteUrl && (
+            <a role="menuitem" className="help-item" href={websiteUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); window.open(websiteUrl, "_blank", "noopener,noreferrer"); setMenu(false); }}>
+              <span className="help-item-icon"><LuGlobe /></span>
+              <span className="help-item-text"><strong>{t("Visit website")}</strong><small>{websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}</small></span>
+              <LuExternalLink className="help-item-chev" />
+            </a>
+          )}
           <div className="help-sep" />
           <button type="button" role="menuitem" className="help-item compact" onClick={() => choose("shortcuts")}>
             <span className="help-item-icon"><LuKeyboard /></span><span className="help-item-text"><strong>{t("Keyboard shortcuts")}</strong></span>
@@ -298,7 +305,6 @@ function Training() {
   const lesson = LESSONS.find((l) => l.id === activeId) ?? LESSONS[0];
   const step = Math.min(progress[lesson.id]?.step ?? 0, lesson.steps.length - 1);
   const doneCount = LESSONS.filter((l) => progress[l.id]?.done).length;
-  const pct = Math.round((doneCount / LESSONS.length) * 100);
   const cur = lesson.steps[step];
   const last = step === lesson.steps.length - 1;
   const LessonIcon = LESSON_ICONS[lesson.id] ?? LuGraduationCap;
@@ -312,10 +318,6 @@ function Training() {
   return (
     <div className="set-body">
       <nav className="set-nav hp-doc-nav tr-nav" aria-label="Training courses">
-        <div className="tr-overall">
-          <div><strong>Your progress</strong><span>{doneCount}/{LESSONS.length}</span></div>
-          <div className="help-bar"><span style={{ width: `${pct}%` }} /></div>
-        </div>
         <p className="set-nav-label">Courses</p>
         <div>
           {LESSONS.map((l, i) => {

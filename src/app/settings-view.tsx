@@ -340,6 +340,12 @@ function BrandingSection({ admin, onAdmin, onNotice }: { admin: AdminConfig; onA
               {emailError && <span className="set-error">{emailError}</span>}
             </div>
           </Row>
+          <Row title="Website" hint="Linked from the Help menu and the sign-in page. Leave empty to hide the link.">
+            <div className="set-field-wrap">
+              <input className="set-input" type="text" placeholder="https://example.com or /website/index.html" value={admin.websiteUrl} aria-invalid={Boolean(admin.websiteUrl) && !/^(https?:\/\/[^\s.]+\.\S+|\/(?!\/)\S*)$/i.test(admin.websiteUrl)} onChange={(e) => onAdmin({ websiteUrl: e.target.value })} aria-label="Website" />
+              {admin.websiteUrl && !/^(https?:\/\/[^\s.]+\.\S+|\/(?!\/)\S*)$/i.test(admin.websiteUrl) && <span className="set-error">Use a full address like https://example.com, or a page in this app like /website/index.html</span>}
+            </div>
+          </Row>
         </section>}
       </div>
 
@@ -379,7 +385,7 @@ function BrandingSection({ admin, onAdmin, onNotice }: { admin: AdminConfig; onA
                   <span className="sp-btn" style={{ background: admin.accent }}>Continue to inbox</span>
                   <span className="sp-note">Use the same email and password you use for your mail today.</span>
                 </div>
-                <div className="sp-foot"><span>© {new Date().getFullYear()} {admin.appName || "Foxalora"}</span><span>Privacy · Help</span></div>
+                <div className="sp-foot"><span>© {new Date().getFullYear()} {admin.appName || "Foxalora"}</span><span>Privacy · Help{admin.websiteUrl && <> · <a href={admin.websiteUrl} target="_blank" rel="noopener noreferrer">Website ↗</a></>}</span></div>
               </div>
             </div>
           </div>

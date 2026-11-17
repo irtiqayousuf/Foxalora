@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get started · Install Foxalora</title>
+<meta name="description" content="Install Foxalora with Docker and walk through the setup wizard: branding, mail servers, security and your admin account.">
+<meta property="og:title" content="Get started · Install Foxalora">
+<meta property="og:description" content="Install Foxalora with Docker and walk through the setup wizard: branding, mail servers, security and your admin account.">
+<meta name="theme-color" content="#111114">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23111114'/%3E%3Ctext x='16' y='22' font-family='Arial' font-size='17' font-weight='700' fill='white' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html" aria-label="Foxalora home"><span class="brand-mark">F</span>Foxalora</a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="features.html" data-page="features">Features</a>
+      <a href="hosts.html" data-page="hosts">For hosts</a>
+      <a href="security.html" data-page="security">Security</a>
+      <a href="get-started.html" data-page="get-started" aria-current="page">Get started</a>
+      <a href="contact.html" data-page="contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch light or dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm" href="get-started.html">Get Foxalora free</a>
+      <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
+    <a href="index.html" data-page="home">Home</a>
+    <a href="features.html" data-page="features">Features</a>
+    <a href="hosts.html" data-page="hosts">For hosts</a>
+    <a href="security.html" data-page="security">Security</a>
+    <a href="get-started.html" data-page="get-started" aria-current="page">Get started</a>
+    <a href="contact.html" data-page="contact">Contact</a>
+    <a class="btn btn-primary" href="get-started.html">Get Foxalora free</a>
+  </nav>
+</header>
+
+<main id="main">
+<section class="page-hero hero">
+  <div class="wrap reveal">
+    <span class="eyebrow">Get started</span>
+    <h1>Up and running in an afternoon.</h1>
+    <p class="lead">Install Foxalora on your server, then let the setup wizard guide you through the rest. No coding needed.</p>
+    <div class="hero-cta"><a class="btn btn-primary" href="#install">Install now</a><a class="btn btn-ghost" href="#wizard">Try the setup wizard</a></div>
+  </div>
+</section>
+
+<section class="section tight" id="install">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Step 1</span>
+      <h2>Install with Docker.</h2>
+      <p>You'll need a Linux server with Docker, and Nginx for HTTPS.</p>
+    </div>
+    <div class="grid g2 reveal" style="align-items:start">
+      <div class="card">
+        <h3 style="margin-top:0">What you need</h3>
+        <ul class="ticks">
+          <li>A Linux server (any modern distribution)</li>
+          <li>Docker and Docker Compose</li>
+          <li>A domain such as <code>webmail.yourhost.com</code></li>
+          <li>An HTTPS certificate (e.g. Let's Encrypt)</li>
+          <li>Your IMAP and SMTP server addresses</li>
+        </ul>
+      </div>
+      <div>
+        <pre class="code"><span class="c"># 1. Download Foxalora</span>
+git clone https://github.com/foxalora/foxalora.git
+cd foxalora
+
+<span class="c"># 2. Start it</span>
+docker compose up -d
+
+<span class="c"># 3. Open the setup wizard</span>
+<span class="c">#    https://webmail.yourhost.com/setup</span></pre>
+        <p style="margin-top:12px;color:var(--soft);font-size:13.5px">The setup page locks itself once setup is complete, so nobody else can use it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="wizard">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Step 2</span>
+      <h2>The setup wizard.</h2>
+      <p>This is what you'll see after installing. Click through to try it. Nothing here is saved.</p>
+    </div>
+
+    <div class="wizard reveal" data-wizard>
+      <ol class="wz-steps" aria-label="Setup steps">
+        <li><button type="button"><span class="n">1</span>Brand</button></li>
+        <li><button type="button"><span class="n">2</span>Mail servers</button></li>
+        <li><button type="button"><span class="n">3</span>Security</button></li>
+        <li><button type="button"><span class="n">4</span>Admin account</button></li>
+        <li><button type="button"><span class="n">✓</span>Done</button></li>
+      </ol>
+      <div class="wz-body">
+        <div class="wz-progress" aria-hidden="true"><i></i></div>
+
+        <div class="wz-pane">
+          <h3>Make it yours</h3>
+          <p>Your customers will see this name and colour everywhere.</p>
+          <div class="wz-fields">
+            <div class="field"><label for="wz-name">App name</label><input id="wz-name" class="input" value="YourHost Mail" maxlength="40"><small>Shown in the browser tab and on the sign-in page.</small></div>
+            <div class="row2">
+              <div class="field"><label for="wz-color">Brand colour</label><input id="wz-color" class="input" type="color" value="#111114" style="height:48px;padding:6px"></div>
+              <div class="field"><label>Preview</label><div style="display:flex;align-items:center;gap:10px;height:48px"><span data-brand-preview class="brand-mark" style="background:#111114;color:#fff">Y</span><strong data-app-name>YourHost Mail</strong></div></div>
+            </div>
+            <div class="field"><label for="wz-support">Support email</label><input id="wz-support" class="input" type="email" value="support@yourhost.com"><small>Shown to people who need help signing in.</small></div>
+          </div>
+        </div>
+
+        <div class="wz-pane">
+          <h3>Connect your mail servers</h3>
+          <p>Foxalora connects to the servers you already run. Nothing is moved.</p>
+          <div class="wz-fields">
+            <div class="row2">
+              <div class="field"><label for="wz-imap">IMAP server</label><input id="wz-imap" class="input" value="mail.yourhost.com"></div>
+              <div class="field"><label for="wz-imap-port">Port &amp; security</label><select id="wz-imap-port" class="input"><option>993 · SSL/TLS</option><option>143 · STARTTLS</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="wz-smtp">SMTP server</label><input id="wz-smtp" class="input" value="mail.yourhost.com"></div>
+              <div class="field"><label for="wz-smtp-port">Port &amp; security</label><select id="wz-smtp-port" class="input"><option>465 · SSL/TLS</option><option>587 · STARTTLS</option></select></div>
+            </div>
+            <div class="check"><span class="s ok">✓</span>Connection test passed: both servers answered over an encrypted connection.</div>
+            <small style="color:var(--soft)">Running several servers? Map each domain to its server later in Settings → Mail servers.</small>
+          </div>
+        </div>
+
+        <div class="wz-pane">
+          <h3>Set your security rules</h3>
+          <p>Sensible defaults are already chosen. Change them any time.</p>
+          <div class="wz-fields">
+            <div class="row2">
+              <div class="field"><label for="wz-timeout">Sign people out after</label><select id="wz-timeout" class="input"><option>30 minutes</option><option selected>1 hour</option><option>4 hours</option><option>1 day</option></select></div>
+              <div class="field"><label for="wz-attempts">Failed sign-in attempts</label><select id="wz-attempts" class="input"><option>3</option><option selected>5</option><option>10</option></select></div>
+            </div>
+            <div class="field"><label for="wz-attach">Attachment limit (MB)</label><input id="wz-attach" class="input" type="number" value="25" min="1" max="100"></div>
+            <div class="check"><span class="s ok">✓</span>Encrypted connections required</div>
+            <div class="check"><span class="s ok">✓</span>Outside images blocked by default</div>
+          </div>
+        </div>
+
+        <div class="wz-pane">
+          <h3>Create your admin account</h3>
+          <p>This account can open the admin settings. Use your own mailbox address.</p>
+          <div class="wz-fields">
+            <div class="field"><label for="wz-admin">Admin email</label><input id="wz-admin" class="input" type="email" value="admin@yourhost.com"><small>You'll sign in with this mailbox's normal password.</small></div>
+            <div class="field"><label for="wz-domains">Allowed domains (optional)</label><input id="wz-domains" class="input" placeholder="bakery.com, studio.co"><small>Leave empty to let anyone with a working mailbox sign in.</small></div>
+          </div>
+        </div>
+
+        <div class="wz-pane">
+          <div style="display:grid;width:64px;height:64px;margin-bottom:18px;place-items:center;border-radius:50%;color:var(--on-accent);background:var(--accent);font-size:28px">✓</div>
+          <h3><span data-app-name>YourHost Mail</span> is ready</h3>
+          <p>Setup is complete and the setup page is now locked. Your customers can sign in with their existing email and password.</p>
+          <div class="wz-fields">
+            <div class="check"><span class="s ok">✓</span>Branding saved</div>
+            <div class="check"><span class="s ok">✓</span>Mail servers connected</div>
+            <div class="check"><span class="s ok">✓</span>Security rules applied</div>
+            <div class="check"><span class="s ok">✓</span>Admin account created</div>
+          </div>
+        </div>
+
+        <div class="wz-nav">
+          <button class="btn btn-ghost" type="button" data-back>Back</button>
+          <button class="btn btn-primary" type="button" data-next>Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Step 3</span>
+      <h2>Tell your customers.</h2>
+      <p>Share the address, add a "Webmail" link in your control panel, and you're done.</p>
+    </div>
+    <div class="grid g3 reveal">
+      <div class="card step"><span class="num">1</span><h3>Share the link</h3><p>Send customers to <code>webmail.yourhost.com</code>.</p></div>
+      <div class="card step"><span class="num">2</span><h3>Add a panel link</h3><p>Put a "Webmail" button in cPanel, Plesk or DirectAdmin.</p></div>
+      <div class="card step"><span class="num">3</span><h3>They sign in</h3><p>With the email and password they already use.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap reveal">
+    <div class="cta">
+      <h2>Need a hand with setup?</h2>
+      <p>We're happy to help you get Foxalora running.</p>
+      <div class="hero-cta"><a class="btn btn-primary" href="contact.html">Contact us</a><a class="btn btn-ghost" href="index.html#faq">Read the FAQ</a></div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="brand" href="index.html"><span class="brand-mark">F</span>Foxalora</a>
+        <p>Modern, secure, open-source webmail for hosting companies and their customers.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="hosts.html">For hosting companies</a></li>
+          <li><a href="security.html">Security</a></li>
+          <li><a href="get-started.html">Get started</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="get-started.html#install">Installation guide</a></li>
+          <li><a href="get-started.html#wizard">Setup wizard</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="security.html#report">Report a vulnerability</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="mailto:support@foxalora.com">support@foxalora.com</a></li>
+          <li><a href="contact.html#privacy">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> Foxalora. Free and open source.</span>
+      <span>Made for hosting companies everywhere.</span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+
+</body>
+</html>

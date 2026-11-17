@@ -41,6 +41,7 @@ export type AdminConfig = {
   logoDark: string; // data URL, dark mode (falls back to logo)
   accent: string;
   supportEmail: string;
+  websiteUrl: string;
   panelType: "cpanel" | "plesk" | "directadmin" | "other";
   panelUrl: string; // where admins manage mailboxes, passwords and storage
   defaultLanguage: string;
@@ -94,6 +95,7 @@ export const defaultAdminConfig: AdminConfig = {
   logoDark: "",
   accent: "#111114",
   supportEmail: "support@foxalora.app",
+  websiteUrl: "/website/index.html",
   panelType: "cpanel",
   panelUrl: "",
   defaultLanguage: "en",

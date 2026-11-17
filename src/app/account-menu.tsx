@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LuChevronDown, LuChevronUp, LuCloud, LuLogOut, LuPlus, LuSettings, LuX } from "react-icons/lu";
-
-type Account = { name: string; email: string; signedIn: boolean };
+import { LuCloud, LuLogOut, LuSettings, LuX } from "react-icons/lu";
 
 type Props = {
   name: string;
@@ -14,7 +12,7 @@ type Props = {
   quotaBytes: number;
   onSettings: () => void;
   onSignOut: () => void;
-  onNotice: (text: string) => void;
+  onNotice?: (text: string) => void;
 };
 
 const fmt = (b: number) => {
@@ -22,15 +20,9 @@ const fmt = (b: number) => {
   while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
   return `${b >= 100 || i === 0 ? Math.round(b) : b.toFixed(1).replace(/\.0$/, "")} ${u[i]}`;
 };
-const initialsOf = (n: string) => n.trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "?";
 
-export default function AccountMenu({ name, email, initials, usedBytes, quotaBytes, onSettings, onSignOut, onNotice }: Props) {
+export default function AccountMenu({ name, email, initials, usedBytes, quotaBytes, onSettings, onSignOut }: Props) {
   const [open, setOpen] = useState(false);
-  const [showOthers, setShowOthers] = useState(true);
-  const [others, setOthers] = useState<Account[]>([
-    { name: "Northstar Studio", email: "alex@northstar.studio", signedIn: true },
-    { name: "Foxalora Team", email: "hello@foxalora.app", signedIn: false },
-  ]);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,9 +51,6 @@ export default function AccountMenu({ name, email, initials, usedBytes, quotaByt
                 <strong>{name}</strong>
                 <span>{email}</span>
               </div>
-              <button type="button" className="acct-chev" aria-label={showOthers ? "Hide other accounts" : "Show other accounts"} aria-expanded={showOthers} onClick={() => setShowOthers((v) => !v)}>
-                {showOthers ? <LuChevronUp /> : <LuChevronDown />}
-              </button>
             </div>
 
             <div className="acct-storage">
@@ -72,27 +61,8 @@ export default function AccountMenu({ name, email, initials, usedBytes, quotaByt
               <small>{fmt(usedBytes)} used · {fmt(quotaBytes - usedBytes)} free</small>
             </div>
 
-            {showOthers && others.map((a) => (
-              <div key={a.email} className="acct-row">
-                <div className="acct-row-main">
-                  <span className="acct-avatar">{initialsOf(a.name)}</span>
-                  <div className="acct-me-text"><strong>{a.name}</strong><span>{a.email}</span></div>
-                  {!a.signedIn && <span className="acct-tag">Signed out</span>}
-                </div>
-                {a.signedIn ? (
-                  <button type="button" className="acct-switch" onClick={() => { onNotice(`Switched to ${a.email}`); setOpen(false); }}>Switch</button>
-                ) : (
-                  <div className="acct-row-actions">
-                    <button type="button" className="reader-action primary" onClick={() => { setOthers((xs) => xs.map((x) => (x.email === a.email ? { ...x, signedIn: true } : x))); onNotice(`Signed in to ${a.email}`); }}>Sign in</button>
-                    <button type="button" className="reader-action" onClick={() => { setOthers((xs) => xs.filter((x) => x.email !== a.email)); onNotice(`${a.email} removed from this device`); }}>Remove</button>
-                  </div>
-                )}
-              </div>
-            ))}
-
             <button type="button" className="acct-link" onClick={() => { setOpen(false); onSettings(); }}><LuSettings /> Manage your account</button>
-            <button type="button" className="acct-link" onClick={() => onNotice("Adding another account is coming soon")}><LuPlus /> Add another account</button>
-            <button type="button" className="acct-link" onClick={() => { setOpen(false); onSignOut(); }}><LuLogOut /> Sign out of all accounts</button>
+            <button type="button" className="acct-link" onClick={() => { setOpen(false); onSignOut(); }}><LuLogOut /> Sign out</button>
           </div>
         </div>
       )}

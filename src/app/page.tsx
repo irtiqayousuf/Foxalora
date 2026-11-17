@@ -146,14 +146,6 @@ export default function Home() {
   const [signingIn, setSigningIn] = useState(false);
   const [signInError, setSignInError] = useState("");
 
-  // Already signed in (valid session cookie)? Skip the sign-in page.
-  useEffect(() => {
-    let live = true;
-    fetch("/api/auth/session").then((r) => r.json()).then((d: { email: string | null; localAdmin?: boolean }) => {
-      if (live && d.email) { setEmail(d.email); setSignedIn(true); if (!d.localAdmin) void loadMailRef.current(true); void loadAdminConfig(); }
-    }).catch(() => {});
-    return () => { live = false; };
-  }, []);
   const [activeSection, setActiveSection] = useState<AppSection>("mail");
   const [activeFolder, setActiveFolder] = useState<FolderId>("inbox");
   const [messages, setMessages] = useState(initialMessages);
@@ -177,6 +169,14 @@ export default function Home() {
       setIsAdmin(d.isAdmin);
     } catch { /* offline: keep defaults */ }
   }, []);
+  // Already signed in (valid session cookie)? Skip the sign-in page.
+  useEffect(() => {
+    let live = true;
+    fetch("/api/auth/session").then((r) => r.json()).then((d: { email: string | null; localAdmin?: boolean }) => {
+      if (live && d.email) { setEmail(d.email); setSignedIn(true); if (!d.localAdmin) void loadMailRef.current(true); void loadAdminConfig(); }
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [loadAdminConfig]);
   const [savedContacts, setSavedContacts] = useState<SavedContact[]>(SEED_CONTACTS);
   const [frequency, setFrequency] = useState<Frequency>({});
   const updateContacts = useCallback((next: SavedContact[] | ((cur: SavedContact[]) => SavedContact[])) => {
@@ -755,7 +755,7 @@ export default function Home() {
           </div>
           <footer className="auth-legal">
             <span>© {new Date().getFullYear()} {appName}</span>
-            <span>Privacy&nbsp; · &nbsp;Help</span>
+            <span>Privacy&nbsp; · &nbsp;Help{(adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl) && <>&nbsp; · &nbsp;<a href={adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl} target="_blank" rel="noopener noreferrer">Website ↗</a></>}</span>
           </footer>
         </section>
       </main>
@@ -878,7 +878,7 @@ export default function Home() {
           </div>
           <div className="topbar-right">
             <LanguageMenu value={prefs.language} onChange={(language) => updatePrefs({ language })} />
-            <HelpMenu onOpenPage={(p) => { setActiveSection(p); setOpenMessageId(null); setDock(null); }} />
+            <HelpMenu websiteUrl={adminConfig.websiteUrl ?? defaultAdminConfig.websiteUrl}appName={appName} onOpenPage={(p) => { setActiveSection(p); setOpenMessageId(null); setDock(null); }} />
             <button className="icon-button topbar-settings" aria-label={tr("Settings")} title={tr("Settings")} aria-pressed={activeSection === "settings"} onClick={() => { setActiveSection("settings"); setOpenMessageId(null); setDock(null); }}><IoSettingsOutline /></button>
             <AccountMenu name={identities[0].name} email={email || identities[0].email} initials={initials} usedBytes={18.6 * 1024 ** 3} quotaBytes={5 * 1024 ** 4} onSettings={() => { setActiveSection("settings"); setOpenMessageId(null); setDock(null); }} onSignOut={signOut} onNotice={flash} />
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LuChevronLeft, LuChevronRight, LuListPlus, LuStickyNote, LuX } from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight, LuStickyNote, LuX } from "react-icons/lu";
 
 type DayItem = { id: number; kind: "task" | "note"; text: string; done: boolean };
 const ITEMS_KEY = "foxalora.day-items.v1";
@@ -130,10 +130,6 @@ export default function TodayRail() {
                   </button>
                 );
               })}
-            </div>
-            <div className="rail-picker-actions">
-              <button className={`rail-today-btn ${adding === "task" ? "on" : ""}`} onClick={() => { setAdding(adding === "task" ? null : "task"); setDraft(""); }}><LuListPlus /> Add task</button>
-              <button className={`rail-today-btn ${adding === "note" ? "on" : ""}`} onClick={() => { setAdding(adding === "note" ? null : "note"); setDraft(""); }}><LuStickyNote /> Add note</button>
             </div>
           </section>
 
